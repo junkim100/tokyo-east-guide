@@ -1620,9 +1620,11 @@ function makeMarkerIcon(place) {
   });
 }
 
+const tabelogAppLauncherUrl = "https://tabelog-tourists.onelink.me/3eEh?af_xp=custom&pid=tabelog_tourists&c=tokyo_citywide_guide&af_force_deeplink=true";
+
 function makeLink(link) {
   const anchor = document.createElement("a");
-  anchor.href = link.url;
+  anchor.href = link.label === "Tabelog" ? tabelogAppLauncherUrl : link.url;
   anchor.textContent = link.label;
   anchor.target = "_blank";
   anchor.rel = "noopener noreferrer";
@@ -1689,6 +1691,10 @@ function matchesFilters(place) {
   const areaMatches = activeArea === "all" || place.area === activeArea;
   const categoryMatches = activeCategory === "all" || place.category === activeCategory;
   return areaMatches && categoryMatches;
+}
+
+function matchesMapCategory(place) {
+  return activeCategory === "all" || place.category === activeCategory;
 }
 
 function renderList(visiblePlaces) {
@@ -1759,7 +1765,7 @@ function renderList(visiblePlaces) {
 
 function render() {
   const visiblePlaces = places.filter(matchesFilters);
-  const visibleMarkers = visiblePlaces.map((place) => markers.get(place.name));
+  const visibleMarkers = places.filter(matchesMapCategory).map((place) => markers.get(place.name));
   venueLayer.clearLayers();
   visibleMarkers.forEach((marker) => venueLayer.addLayer(marker));
   if (lastPosition) visiblePlaces.sort((a, b) => distanceKm(lastPosition, a) - distanceKm(lastPosition, b));
