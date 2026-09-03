@@ -38,8 +38,7 @@ h1 { margin: 0; color: #ffffff; font-family: "Avenir Next Condensed", "Arial Nar
 .district-label { border: 0; background: transparent; pointer-events: none; }
 .district-label span { display: block; width: max-content; transform: translate(-50%, -50%); border-radius: 3px; padding: 2px 4px; background: rgba(248, 247, 243, 0.82); color: #243b53; font-size: 10px; font-weight: 850; line-height: 1.1; letter-spacing: 0.015em; text-shadow: 0 1px 0 #ffffff; white-space: nowrap; }
 .venue-marker { display: grid !important; place-items: center; border: 0; background: transparent; }
-.venue-marker span { display: grid; width: 30px; height: 30px; place-items: center; border: 2px solid #ffffff; border-radius: 50%; color: #ffffff; font-size: 11px; font-weight: 900; line-height: 1; box-shadow: 0 1px 5px rgba(16, 42, 67, 0.48); }
-.venue-marker b { font-size: 10px; line-height: 1; letter-spacing: -0.02em; }
+.venue-marker span { display: flex; width: 32px; height: 32px; align-items: center; justify-content: center; overflow: visible; border: 2px solid #ffffff; border-radius: 50%; background-clip: padding-box; color: #ffffff; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; font-size: 18px; font-style: normal; font-weight: 400; line-height: 1; text-align: center; white-space: nowrap; box-shadow: 0 1px 5px rgba(16, 42, 67, 0.48); }
 .location-marker { display: grid !important; place-items: center; border: 0; background: transparent; }
 .location-marker span { display: block; width: 20px; height: 20px; border: 4px solid #ffffff; border-radius: 50%; background: #1261a0; box-shadow: 0 0 0 2px #1261a0, 0 2px 8px rgba(16, 42, 67, 0.35); }
 .map-actions { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: center; min-height: 60px; padding: 7px 12px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: #ffffff; }
@@ -114,7 +113,7 @@ h1 { margin: 0; color: #ffffff; font-family: "Avenir Next Condensed", "Arial Nar
 </div>
 <div class="map-actions">
 <button class="locate-button" id="locate" type="button">Locate me</button>
-<p class="location-copy" id="location-status" role="status" aria-live="polite"><strong>Location off</strong>This guide does not save your position; map tiles load from Esri.</p>
+<p class="location-copy" id="location-status" role="status" aria-live="polite"><strong>Location starts automatically</strong>Use Locate me to retry or recenter. This guide does not save your position; map tiles load from Esri.</p>
 </div>
 </section>
 <section aria-labelledby="results-title">
@@ -210,18 +209,18 @@ h1 { margin: 0; color: #ffffff; font-family: "Avenir Next Condensed", "Arial Nar
 
 const places = JSON.parse(document.getElementById("places-data").textContent);
 const styles = {
-  hotel: { color: "#b42318", symbol: "H", label: "Hotel" },
-  coffee: { color: "#6b3e26", symbol: "C", label: "Coffee" },
-  ramen: { color: "#8f1d2c", symbol: "R", label: "Ramen" },
-  tsukemen: { color: "#5b3f8c", symbol: "TS", label: "Tsukemen" },
-  katsu: { color: "#0b6b5b", symbol: "K", label: "Katsu" },
-  soba: { color: "#49651f", symbol: "SO", label: "Soba" },
-  tempura: { color: "#9a4f00", symbol: "TE", label: "Tempura" },
-  sukiyaki: { color: "#7b2f73", symbol: "SK", label: "Sukiyaki" },
-  unagi: { color: "#303f76", symbol: "U", label: "Unagi" },
-  yakitori: { color: "#8c3b13", symbol: "Y", label: "Yakitori" },
-  sushi: { color: "#006878", symbol: "SU", label: "Sushi" },
-  izakaya: { color: "#374151", symbol: "I", label: "Izakaya" }
+  hotel: { color: "#b42318", symbol: "🏨", label: "Hotel" },
+  coffee: { color: "#6b3e26", symbol: "☕", label: "Coffee" },
+  ramen: { color: "#8f1d2c", symbol: "🍜", label: "Ramen" },
+  tsukemen: { color: "#5b3f8c", symbol: "🥢", label: "Tsukemen" },
+  katsu: { color: "#0b6b5b", symbol: "🐷", label: "Katsu" },
+  soba: { color: "#49651f", symbol: "🌾", label: "Soba" },
+  tempura: { color: "#9a4f00", symbol: "🍤", label: "Tempura" },
+  sukiyaki: { color: "#7b2f73", symbol: "🍲", label: "Sukiyaki" },
+  unagi: { color: "#303f76", symbol: "🐟", label: "Unagi" },
+  yakitori: { color: "#8c3b13", symbol: "🍢", label: "Yakitori" },
+  sushi: { color: "#006878", symbol: "🍣", label: "Sushi" },
+  izakaya: { color: "#374151", symbol: "🍶", label: "Izakaya" }
 };
 const eastTokyoBounds = L.latLngBounds([35.663, 139.755], [35.723, 139.81]);
 const map = L.map("map", { zoomControl: true, minZoom: 11, maxZoom: 19 });
@@ -273,7 +272,7 @@ function makeMarkerIcon(place) {
   const style = styles[place.category];
   return L.divIcon({
     className: "venue-marker",
-    html: `<span style="background:${style.color}"><b>${style.symbol}</b></span>`,
+    html: `<span style="background:${style.color}" aria-hidden="true">${style.symbol}</span>`,
     iconSize: [36, 36],
     iconAnchor: [18, 18],
     popupAnchor: [0, -16]
@@ -492,23 +491,19 @@ function locationErrorMessage(error) {
   return ["Location unavailable", "Tap Locate me to try again."];
 }
 
+function clearLocationWatch() {
+  if (watchId === null) return;
+  if ("geolocation" in navigator) navigator.geolocation.clearWatch(watchId);
+  watchId = null;
+}
+
 function handleLocationError(error) {
+  clearLocationWatch();
   const message = locationErrorMessage(error);
   setStatus(message[0], message[1]);
 }
 
-function startLocationWatch(position) {
-  updateLocation(position, true);
-  if (watchId === null) {
-    watchId = navigator.geolocation.watchPosition(
-      (nextPosition) => updateLocation(nextPosition, false),
-      handleLocationError,
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-    );
-  }
-}
-
-document.getElementById("locate").addEventListener("click", () => {
+function startLocationTracking() {
   if (window.location.protocol === "file:") {
     setStatus("Location unavailable from a file", "Preview on localhost or publish to GitHub Pages. GitHub Pages HTTPS supports geolocation.");
     return;
@@ -522,18 +517,28 @@ document.getElementById("locate").addEventListener("click", () => {
     setStatus("Location unsupported", "This browser does not provide geolocation.");
     return;
   }
-  if (lastPosition && watchId !== null) {
-    map.setView([lastPosition.lat, lastPosition.lon], Math.max(map.getZoom(), 15));
-    setStatus("Live location is on", "Recentered. This guide does not save your position; map tiles load from Esri.");
+  if (watchId !== null) {
+    if (lastPosition) {
+      map.setView([lastPosition.lat, lastPosition.lon], Math.max(map.getZoom(), 15));
+      setStatus("Live location is on", "Recentered. This guide does not save your position; map tiles load from Esri.");
+    } else {
+      setStatus("Finding your location", "Your browser may ask for permission.");
+    }
     return;
   }
   setStatus("Finding your location", "Your browser may ask for permission.");
-  navigator.geolocation.getCurrentPosition(
-    startLocationWatch,
+  let recenterOnNextFix = true;
+  watchId = navigator.geolocation.watchPosition(
+    (position) => {
+      updateLocation(position, recenterOnNextFix);
+      recenterOnNextFix = false;
+    },
     handleLocationError,
     { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
   );
-});
+}
+
+document.getElementById("locate").addEventListener("click", startLocationTracking);
 
 let mapSizeRefreshTimer = null;
 function scheduleMapSizeRefresh() {
@@ -549,6 +554,7 @@ window.addEventListener("orientationchange", scheduleMapSizeRefresh);
 
 
 render();
+startLocationTracking();
 </script>
 </body>
 </html>
