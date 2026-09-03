@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#102a43">
+<title>East Tokyo Pocket Guide</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQ3ynYgOcRCsxxBVVZaHqBiJGdYJX0=" crossorigin="anonymous">
+<style>
+* { box-sizing: border-box; }
+html { background: #dbe6ec; color: #17212b; overflow-x: hidden; }
+body { margin: 0; min-width: 0; overflow-x: hidden; background: #f6f3ec; color: #17212b; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", sans-serif; font-size: 16px; line-height: 1.45; }
+button, a { -webkit-tap-highlight-color: transparent; }
+button { font: inherit; }
+a { color: #075985; text-underline-offset: 3px; }
+a:hover { color: #9f231a; }
+button:focus-visible, a:focus-visible, summary:focus-visible { outline: 3px solid #ffb703; outline-offset: 2px; }
+.app { width: 100%; max-width: 520px; min-height: 100vh; margin: 0 auto; overflow: hidden; background: #f6f3ec; box-shadow: 0 0 36px rgba(16, 42, 67, 0.16); }
+.masthead { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: end; padding: 15px 16px 13px; border-top: 6px solid #c4362b; background: #102a43; color: #ffffff; }
+.kicker { margin: 0 0 3px; color: #b9d7e8; font-size: 11px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; }
+h1 { margin: 0; color: #ffffff; font-family: Georgia, "Times New Roman", serif; font-size: clamp(25px, 8vw, 34px); font-weight: 700; line-height: 1.02; letter-spacing: -0.025em; }
+.jp-title { color: #ffffff; font-size: 17px; font-weight: 800; letter-spacing: 0.12em; writing-mode: vertical-rl; }
+.tripline { margin: 0; padding: 9px 16px 10px; border-bottom: 1px solid #c7d5dd; background: #e8f0f4; color: #243b53; font-size: 13px; font-weight: 650; }
+.arrival { border-bottom: 1px solid #c7d5dd; background: #ffffff; }
+.arrival summary { min-height: 48px; padding: 13px 44px 12px 16px; cursor: pointer; color: #7a271f; font-size: 14px; font-weight: 800; list-style-position: inside; }
+.arrival[open] summary { border-bottom: 1px solid #e4e7eb; }
+.arrival-body { padding: 4px 16px 16px; color: #243b53; font-size: 14px; }
+.arrival-body p { margin: 11px 0; }
+.route { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 9px; align-items: start; margin: 12px 0; }
+.route-number { display: grid; width: 28px; height: 28px; place-items: center; border-radius: 50%; background: #c4362b; color: #ffffff; font-weight: 900; }
+.source-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.source-links a, .place-links a { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; border: 1px solid #a9bbc6; border-radius: 8px; padding: 9px 12px; background: #ffffff; color: #075985; font-size: 13px; font-weight: 800; text-decoration: none; }
+.map-shell { position: relative; background: #cad7de; }
+#map { width: 100%; height: 48vh; height: 48dvh; min-height: 360px; max-height: 485px; background: #dbe6ec; }
+.map-reset { position: absolute; z-index: 1000; top: 10px; right: 10px; min-height: 44px; border: 2px solid rgba(16, 42, 67, 0.28); border-radius: 8px; padding: 8px 12px; background: #ffffff; color: #102a43; font-size: 13px; font-weight: 850; box-shadow: 0 2px 8px rgba(16, 42, 67, 0.2); }
+.map-reset:active { background: #e8f0f4; }
+.leaflet-control-zoom a { width: 44px !important; height: 44px !important; line-height: 44px !important; color: #102a43 !important; }
+.leaflet-control-attribution { max-width: 78%; font-size: 9px; }
+.leaflet-popup-close-button { width: 44px !important; height: 44px !important; font-size: 24px !important; line-height: 36px !important; }
+.venue-marker { display: grid !important; place-items: center; border: 0; background: transparent; }
+.venue-marker span { display: grid; width: 34px; height: 34px; place-items: center; border: 3px solid #ffffff; border-radius: 50% 50% 50% 14%; color: #ffffff; font-size: 12px; font-weight: 900; line-height: 1; box-shadow: 0 2px 8px rgba(16, 42, 67, 0.42); transform: rotate(-45deg); }
+.venue-marker b { transform: rotate(45deg); }
+.location-marker { display: grid !important; place-items: center; border: 0; background: transparent; }
+.location-marker span { display: block; width: 22px; height: 22px; border: 4px solid #ffffff; border-radius: 50%; background: #1261a0; box-shadow: 0 0 0 2px #1261a0, 0 2px 8px rgba(16, 42, 67, 0.35); }
+.map-actions { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: center; min-height: 60px; padding: 8px 12px; border-top: 1px solid #c7d5dd; border-bottom: 1px solid #c7d5dd; background: #ffffff; }
+.locate-button { min-height: 44px; border: 0; border-radius: 8px; padding: 9px 14px; background: #c4362b; color: #ffffff; font-weight: 850; box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.18); }
+.locate-button:active { transform: translateY(1px); }
+.location-copy { margin: 0; color: #526777; font-size: 12px; line-height: 1.35; }
+.location-copy strong { display: block; color: #17212b; font-size: 13px; }
+.legend { display: flex; gap: 12px; align-items: center; width: 100%; overflow-x: auto; padding: 9px 14px 10px; border-bottom: 1px solid #c7d5dd; background: #e8f0f4; scrollbar-width: thin; }
+.legend-item { display: inline-flex; flex: 0 0 auto; gap: 5px; align-items: center; color: #334e68; font-size: 11px; font-weight: 750; white-space: nowrap; }
+.legend-dot { display: inline-grid; width: 20px; height: 20px; place-items: center; border: 2px solid #ffffff; border-radius: 50%; color: #ffffff; font-size: 9px; font-weight: 900; box-shadow: 0 0 0 1px rgba(16, 42, 67, 0.2); }
+.filters { padding: 13px 0 9px; border-bottom: 1px solid #c7d5dd; background: #f6f3ec; }
+.filter-row + .filter-row { margin-top: 10px; }
+.filter-label { margin: 0 16px 5px; color: #526777; font-size: 11px; font-weight: 850; letter-spacing: 0.12em; text-transform: uppercase; }
+.chip-track { display: flex; gap: 7px; width: 100%; overflow-x: auto; padding: 0 16px 3px; scrollbar-width: thin; scroll-padding-inline: 16px; }
+.chip { flex: 0 0 auto; min-height: 44px; border: 1px solid #9fb3c1; border-radius: 22px; padding: 9px 14px; background: #ffffff; color: #243b53; font-size: 13px; font-weight: 750; white-space: nowrap; }
+.chip[aria-pressed="true"] { border-color: #102a43; background: #102a43; color: #ffffff; }
+.results-head { display: flex; min-height: 58px; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 16px 8px; }
+.results-head h2 { margin: 0; color: #102a43; font-family: Georgia, "Times New Roman", serif; font-size: 22px; }
+.result-count { margin: 0; color: #526777; font-size: 13px; font-weight: 750; text-align: right; }
+.place-list { display: grid; gap: 10px; padding: 0 12px 20px; }
+.place-card { position: relative; overflow: hidden; border: 1px solid #c7d5dd; border-radius: 12px; padding: 14px 14px 13px 18px; background: #ffffff; box-shadow: 0 3px 12px rgba(16, 42, 67, 0.07); }
+.place-card::before { position: absolute; top: 0; bottom: 0; left: 0; width: 5px; background: var(--place-accent); content: ""; }
+.card-top { display: flex; gap: 10px; align-items: start; justify-content: space-between; }
+.place-card h3 { margin: 0; color: #17212b; font-size: 17px; line-height: 1.2; }
+.distance { flex: 0 0 auto; border-radius: 6px; padding: 4px 7px; background: #e8f0f4; color: #243b53; font-size: 11px; font-weight: 850; white-space: nowrap; }
+.meta { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+.tag { display: inline-flex; min-height: 25px; align-items: center; border-radius: 4px; padding: 3px 7px; background: #edf2f5; color: #334e68; font-size: 11px; font-weight: 750; }
+.score { background: #fff1cc; color: #6f4700; }
+.place-card p { margin: 9px 0 0; color: #334e68; font-size: 14px; }
+.place-card .detail { color: #526777; font-size: 12px; }
+.place-links { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 11px; }
+.empty { margin: 0 12px 24px; border: 1px dashed #9fb3c1; border-radius: 10px; padding: 18px; background: #ffffff; color: #526777; text-align: center; }
+.footer { padding: 18px 16px calc(24px + env(safe-area-inset-bottom)); border-top: 1px solid #c7d5dd; background: #102a43; color: #d9e7ef; font-size: 12px; }
+.footer strong { color: #ffffff; }
+.popup { min-width: 210px; max-width: 250px; color: #17212b; }
+.popup h3 { margin: 0 0 5px; color: #102a43; font-size: 16px; line-height: 1.2; }
+.popup p { margin: 5px 0; font-size: 12px; line-height: 1.35; }
+.popup .place-links { margin-top: 8px; }
+.popup .place-links a { min-height: 44px; padding: 8px 10px; }
+@media (max-height: 780px) {
+  #map { min-height: 330px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+<main class="app">
+<header>
+<div class="masthead">
+<div>
+<p class="kicker">Sep 4 to 7, 2026 · Field map</p>
+<h1>East Tokyo<br>Pocket Guide</h1>
+</div>
+<div class="jp-title" lang="ja">東東京</div>
+</div>
+<p class="tripline">Base: Tosei Hotel Cocone Asakusa, 3-26-10 Asakusa</p>
+</header>
+<details class="arrival">
+<summary>Airport arrival plan: last trains and late backup</summary>
+<div class="arrival-body">
+<p><strong>Skyliner is possible only if you clear immigration very fast.</strong> The final Friday Skyliner departs Narita T1 at <strong>23:00</strong> and T2/3 at <strong>23:03</strong>. A Seoul departure around 20:00 will normally put you at Narita late enough that this connection is risky.</p>
+<div class="route"><span class="route-number">1</span><div><strong>If you reach the Keisei gate in time:</strong> buy the next Skyliner reserved seat to Keisei-Ueno. Do not wait for a direct Asakusa train.</div></div>
+<div class="route"><span class="route-number">2</span><div><strong>At Keisei-Ueno:</strong> take a taxi straight to <em lang="ja">トーセイホテル ココネ浅草, 東京都台東区浅草3-26-10</em>. This is the simplest late-night finish with luggage.</div></div>
+<div class="route"><span class="route-number">3</span><div><strong>If Skyliner is gone:</strong> the final TYO-NRT low-cost bus leaves T3 at 23:20, T2 at 23:25, and T1 at 23:30 for Tokyo Station, then take a taxi to the hotel. If that is also gone, use the Narita fixed-fare taxi stand.</div></div>
+<p>Narita places Taito in taxi Zone C: ¥29,000 via Keiyo Road or ¥31,000 via Bayshore Freeway, plus tolls. The airport also applies a 22:00 to 05:00 surcharge, bringing the base to roughly ¥34,800 or ¥37,200 before tolls. Notify the hotel that you may arrive after midnight.</p>
+<div class="source-links"><a href="https://keisei.ekitan.com/naritaacs-i/timetable/station/682-6/d1?dw=3&amp;date=20260904">Keisei timetable</a><a href="https://www.narita-airport.jp/en/access/taxi/">Taxi fares</a><a href="https://www.google.com/maps/search/?api=1&amp;query=Tosei+Hotel+Cocone+Asakusa">Hotel map</a></div>
+</div>
+</details>
+<section aria-label="Interactive venue map">
+<div class="map-shell">
+<div id="map" role="region" aria-label="Map of East Tokyo venues"></div>
+<button class="map-reset" id="reset-map" type="button" aria-label="Reset map to East Tokyo">Reset view</button>
+</div>
+<div class="map-actions">
+<button class="locate-button" id="locate" type="button">Locate me</button>
+<p class="location-copy" id="location-status" role="status" aria-live="polite"><strong>Location is off</strong>Tap to show straight-line distances. This guide does not save your position; map tiles load from OpenStreetMap.</p>
+</div>
+<div class="legend" id="legend" aria-label="Map marker legend"></div>
+</section>
+<section class="filters" aria-label="Venue filters">
+<div class="filter-row">
+<p class="filter-label">Area</p>
+<div class="chip-track" id="area-filters" role="group" aria-label="Filter by area">
+<button class="chip" type="button" data-area="all" aria-pressed="true">All areas</button>
+<button class="chip" type="button" data-area="asakusa" aria-pressed="false">Asakusa</button>
+<button class="chip" type="button" data-area="ueno" aria-pressed="false">Ueno</button>
+<button class="chip" type="button" data-area="akihabara" aria-pressed="false">Akihabara/Kanda</button>
+<button class="chip" type="button" data-area="ginza" aria-pressed="false">Ginza</button>
+<button class="chip" type="button" data-area="east" aria-pressed="false">East side</button>
+</div>
+</div>
+<div class="filter-row">
+<p class="filter-label">Type</p>
+<div class="chip-track" id="category-filters" role="group" aria-label="Filter by category">
+<button class="chip" type="button" data-category="all" aria-pressed="true">All types</button>
+<button class="chip" type="button" data-category="coffee" aria-pressed="false">Coffee</button>
+<button class="chip" type="button" data-category="ramen" aria-pressed="false">Ramen</button>
+<button class="chip" type="button" data-category="tsukemen" aria-pressed="false">Tsukemen</button>
+<button class="chip" type="button" data-category="katsu" aria-pressed="false">Katsu</button>
+<button class="chip" type="button" data-category="soba" aria-pressed="false">Soba</button>
+<button class="chip" type="button" data-category="tempura" aria-pressed="false">Tempura</button>
+<button class="chip" type="button" data-category="sukiyaki" aria-pressed="false">Sukiyaki</button>
+<button class="chip" type="button" data-category="unagi" aria-pressed="false">Unagi</button>
+<button class="chip" type="button" data-category="yakitori" aria-pressed="false">Yakitori</button>
+<button class="chip" type="button" data-category="sushi" aria-pressed="false">Sushi</button>
+<button class="chip" type="button" data-category="izakaya" aria-pressed="false">Izakaya</button>
+</div>
+</div>
+</section>
+<section aria-labelledby="results-title">
+<div class="results-head">
+<h2 id="results-title">Places</h2>
+<p class="result-count" id="result-count" aria-live="polite"></p>
+</div>
+<div class="place-list" id="place-list"></div>
+</section>
+<footer class="footer"><strong>Check before you go.</strong> Tabelog scores are a Sep 3, 2026 snapshot. Around 3.5 is already strong in Japan, and 3.7+ is destination-level. Opening hours, closures, queues, and access rules change. Sources include official Keisei, Narita Airport, TYO-NRT, cafe sites, Google Maps, and the linked Tabelog pages.</footer>
+</main>
+<script id="places-data" type="application/json">
+[
+  {"name":"Tosei Hotel Cocone Asakusa","kind":"hotel","area":"asakusa","areaLabel":"Asakusa","category":"hotel","categoryLabel":"Hotel","lat":35.7166187,"lon":139.7982778,"summary":"Trip base at 3-26-10 Asakusa.","detail":"Late arrival: notify the hotel if you may arrive after midnight.","budget":"Stay","access":"Base hotel","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Tosei+Hotel+Cocone+Asakusa"}]},
+  {"name":"Fuglen Asakusa","kind":"coffee","area":"asakusa","areaLabel":"Asakusa","category":"coffee","categoryLabel":"Coffee","lat":35.7144526,"lon":139.7939807,"summary":"Global Nordic name with light-roast coffee, waffles, and cocktails at night. The easiest serious coffee stop from the hotel.","detail":"Best role: default morning or late fallback.","budget":"¥","access":"8am to late · walk-in","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Fuglen+Asakusa"},{"label":"Official","url":"https://fuglencoffee.jp/pages/fuglen-asakusa"}]},
+  {"name":"Leaves Coffee Roasters","kind":"coffee","area":"asakusa","areaLabel":"Kuramae / Sumida","category":"coffee","categoryLabel":"Coffee","lat":35.702705099999996,"lon":139.7978326,"summary":"Internationally recognized Tokyo roaster with precise, fruit-forward light roasts. Cross the river from Kuramae.","detail":"Best role: highest-priority roaster near the base. Check the day's opening hours.","budget":"¥¥","access":"Destination cup · check hours","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Leaves+Coffee+Roasters+Tokyo"},{"label":"Official","url":"https://leavescoffee.jp/locations"}]},
+  {"name":"Coffee Wrights Kuramae","kind":"coffee","area":"asakusa","areaLabel":"Kuramae","category":"coffee","categoryLabel":"Coffee","lat":35.7040789,"lon":139.7897193,"summary":"A reliable neighborhood roaster when Leaves is closed or crowded. More casual and easy to drop into.","detail":"Useful nearby backup.","budget":"¥","access":"Roaster · walk-in","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Coffee+Wrights+Kuramae"}]},
+  {"name":"Woodberry Coffee Asakusa","kind":"coffee","area":"asakusa","areaLabel":"Asakusa","category":"coffee","categoryLabel":"Coffee","lat":35.7185858,"lon":139.7958849,"summary":"Established Tokyo specialty roaster with a broader menu, useful when you want brunch with the coffee.","detail":"Coffee and food.","budget":"¥¥","access":"Roaster · walk-in","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Woodberry+Coffee+Asakusa"}]},
+  {"name":"Coffee Murasaki","kind":"coffee","area":"ueno","areaLabel":"Ueno","category":"coffee","categoryLabel":"Coffee","lat":35.7167342,"lon":139.7805018,"summary":"Hand-drip and espresso-focused neighborhood specialty shop. Strongest convenient coffee choice near Ueno Station.","detail":"Small shop.","budget":"¥","access":"Walk-in","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Coffee+Murasaki+Ueno"}]},
+  {"name":"Kielo Coffee","kind":"coffee","area":"akihabara","areaLabel":"Akihabara","category":"coffee","categoryLabel":"Coffee","lat":35.701867899999996,"lon":139.7760028,"summary":"A specialty-focused refuge from Electric Town, known for modern, often expressive coffees.","detail":"Light-roast focus.","budget":"¥","access":"Walk-in","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Kielo+Coffee+Akihabara"}]},
+  {"name":"Single O Kanda-Awaji","kind":"coffee","area":"akihabara","areaLabel":"Kanda / Akihabara","category":"coffee","categoryLabel":"Coffee","lat":35.6974,"lon":139.76722619999998,"summary":"Australian-origin roaster with serious coffee, food, and coffee cocktails. Good flexible stop southwest of Akihabara without committing to west Tokyo.","detail":"Day to night.","budget":"¥¥","access":"Coffee, food, and cocktails","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Single+O+Kanda+Awaji"},{"label":"Official","url":"https://singleo.com.au/pages/single-o-japan"}]},
+  {"name":"Glitch Coffee Ginza","kind":"coffee","area":"ginza","areaLabel":"Higashi-Ginza","category":"coffee","categoryLabel":"Coffee","lat":35.6689171,"lon":139.7686324,"summary":"High-end light-roast single origins, rare lots, and guided bean selection. Expect a line and premium cup prices.","detail":"Best role: one deliberate splurge cup, ideally early.","budget":"¥¥¥","access":"9am to 6pm · cashless","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Glitch+Coffee+Ginza"},{"label":"Official","url":"https://glitchcoffee.com/"}]},
+  {"name":"Single O Yurakucho","kind":"coffee","area":"ginza","areaLabel":"Yurakucho / Ginza","category":"coffee","categoryLabel":"Coffee","lat":35.674305,"lon":139.7624639,"summary":"A practical specialty alternative when Glitch's queue is not worth it.","detail":"Easy backup.","budget":"¥","access":"Walk-in","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Single+O+Yurakucho"}]},
+  {"name":"Bongen Coffee","kind":"coffee","area":"ginza","areaLabel":"Ginza","category":"coffee","categoryLabel":"Coffee","lat":35.6710713,"lon":139.77080379999998,"summary":"Highly polished, globally popular Ginza coffee stop. More atmosphere-driven than Leaves or Glitch, but worth knowing if nearby.","detail":"Japanese aesthetic.","budget":"¥¥","access":"Popular · expect a wait","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Bongen+Coffee+Ginza"}]},
+  {"name":"Koffee Mameya Kakeru","kind":"coffee","area":"east","areaLabel":"Kiyosumi-Shirakawa","category":"coffee","categoryLabel":"Coffee","lat":35.6764735,"lon":139.804184,"summary":"The most experience-driven option: a warehouse coffee bar with guided tasting and multi-course coffee menus. It is east, not west, but requires a purposeful detour.","detail":"Coffee tasting · reserve.","budget":"¥¥¥","access":"Purposeful detour","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Koffee+Mameya+Kakeru"},{"label":"Official","url":"https://koffee-mameya.com/"}]},
+  {"name":"Single O Hamacho","kind":"coffee","area":"east","areaLabel":"Nihonbashi-Hamacho","category":"coffee","categoryLabel":"Coffee","lat":35.6840811,"lon":139.789312,"summary":"Flagship with rotating filter coffees from self-serve taps, plus food. Easy to combine with Nihonbashi or the route toward Ginza.","detail":"Coffee on tap.","budget":"¥¥","access":"Walk-in · food available","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Single+O+Hamacho"},{"label":"Official","url":"https://singleo.com.au/pages/hamacho-cafe"}]},
+  {"name":"Men Mitsui","kind":"food","area":"asakusa","areaLabel":"Asakusa / Tawaramachi","category":"ramen","categoryLabel":"Ramen","lat":35.709534,"lon":139.790322,"score":3.84,"summary":"Hand-kneaded noodles and refined shoyu ramen. Highest-priority casual bowl near the base.","detail":"Go Fri or Sat if possible; its regular closure pattern includes Sun/Mon.","budget":"¥","access":"No reservations","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Men+Mitsui+Tokyo"},{"label":"Tabelog","url":"https://tabelog.com/en/tokyo/A1311/A131102/13284327/"}]},
+  {"name":"Daikokuya Tempura Honten","kind":"food","area":"asakusa","areaLabel":"Asakusa","category":"tempura","categoryLabel":"Tempura","lat":35.7127383,"lon":139.79557,"score":3.5,"summary":"Historic 1887 tempura shop, best known for dark, sauced tendon. Classic Asakusa rather than delicate counter tempura.","detail":"Classic tendon.","budget":"¥¥","access":"Walk-in","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Daikokuya+Tempura+Honten"},{"label":"Tabelog","url":"https://tabelog.com/en/tokyo/A1311/A131102/13003696/"}]},
+  {"name":"Asakusa Imahan Kokusai-dori","kind":"food","area":"asakusa","areaLabel":"Asakusa","category":"sukiyaki","categoryLabel":"Sukiyaki","lat":35.7139345,"lon":139.7922291,"score":3.63,"summary":"Classic sukiyaki and shabu-shabu. Lunch is the more flexible value play; reserve for a full dinner.","detail":"Plan ahead for dinner.","budget":"¥¥¥","access":"Reserve","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Asakusa+Imahan+Kokusai+dori"},{"label":"Tabelog","url":"https://tabelog.com/en/tokyo/A1311/A131102/13003649/"}]},
+  {"name":"Asakusa Juroku","kind":"food","area":"asakusa","areaLabel":"Behind Sensoji","category":"soba","categoryLabel":"Soba","lat":35.7195464,"lon":139.7960473,"score":3.92,"summary":"High-end seasonal omakase finishing with serious soba. Very close to the hotel and ideal if a cancellation appears.","detail":"Seasonal omakase with soba finish.","budget":"¥¥¥¥","access":"Reserve","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Asakusa+Juroku"},{"label":"Tabelog","url":"https://tabelog.com/en/tokyo/A1311/A131102/13185027/"}]},
+  {"name":"Aida Ya","kind":"food","area":"ueno","areaLabel":"Okachimachi","category":"tsukemen","categoryLabel":"Tsukemen","lat":35.7082346,"lon":139.77587119999998,"score":3.7,"summary":"Destination tsukemen with house noodles and a choice of two dipping broths. Excellent spontaneous meal.","detail":"Choice of two broths.","budget":"¥","access":"Walk-in","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Aida+Ya+Okachimachi"},{"label":"Tabelog","url":"https://tabelog.com/en/tokyo/A1311/A131101/13288181/"}]},
+  {"name":"Tonkatsu Yamabe Ueno","kind":"food","area":"ueno","areaLabel":"Ueno / Okachimachi","category":"katsu","categoryLabel":"Katsu","lat":35.7086737,"lon":139.7738358,"score":3.54,"summary":"Extremely good-value tonkatsu, counter-style and easy to understand. Expect a queue at meal times.","detail":"Counter-style value option.","budget":"¥","access":"No reservations","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Tonkatsu+Yamabe+Ueno"},{"label":"Tabelog","url":"https://tabelog.com/en/tokyo/A1311/A131101/13162760/"}]},
+  {"name":"Ueno Yabu Soba","kind":"food","area":"ueno","areaLabel":"Ameyoko","category":"soba","categoryLabel":"Soba","lat":35.710195399999996,"lon":139.7754618,"score":3.5,"summary":"Long-running Edo-style soba. A calm traditional alternative to the market crowds.","detail":"Traditional soba near Ameyoko.","budget":"¥¥","access":"Walk-in","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Ueno+Yabu+Soba"},{"label":"Tabelog","url":"https://tabelog.com/en/tokyo/A1311/A131101/13003594/"}]},
+  {"name":"Izuei Honten","kind":"food","area":"ueno","areaLabel":"Ueno","category":"unagi","categoryLabel":"Unagi","lat":35.709671,"lon":139.7726906,"score":3.5,"summary":"Historic Edo-style unagi near Shinobazu Pond. Useful when you want a proper sit-down meal without leaving Ueno.","detail":"Traditional sit-down meal.","budget":"¥¥¥","access":"Check current seating","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Izuei+Honten+Ueno"},{"label":"Tabelog search","url":"https://www.google.com/search?q=site%3Atabelog.com+Izuei+Honten+Ueno"}]},
+  {"name":"Motenashi Kuroki","kind":"food","area":"akihabara","areaLabel":"Asakusabashi / Akihabara","category":"ramen","categoryLabel":"Ramen","lat":35.6979964,"lon":139.7854476,"score":3.91,"summary":"One of the area's true destination ramen shops, known for precise Japanese technique. Queue-worthy.","detail":"Destination bowl.","budget":"¥","access":"No reservations","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Motenashi+Kuroki+Tokyo"},{"label":"Tabelog","url":"https://tabelog.com/en/tokyo/A1311/A131103/13290780/"}]},
+  {"name":"Tonkatsu Marugo","kind":"food","area":"akihabara","areaLabel":"Akihabara","category":"katsu","categoryLabel":"Katsu","lat":35.6991387,"lon":139.7697273,"score":3.74,"summary":"Akihabara's classic destination tonkatsu. Go Fri through Sun on this trip and queue before opening.","detail":"Trip timing: closed Mon/Tue.","budget":"¥¥","access":"Queue before opening","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Tonkatsu+Marugo+Akihabara"},{"label":"Tabelog","url":"https://tabelog.com/en/tokyo/A1310/A131001/13000379/"}]},
+  {"name":"Kanda Matsuya Honten","kind":"food","area":"akihabara","areaLabel":"Kanda / Awajicho","category":"soba","categoryLabel":"Soba","lat":35.6961148,"lon":139.76878829999998,"score":3.65,"summary":"Lively Edo soba institution founded in 1884. Pair with sake and small plates if you have time.","detail":"Old Tokyo atmosphere.","budget":"¥¥","access":"Walk-in","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Kanda+Matsuya+Honten"},{"label":"Tabelog","url":"https://tabelog.com/en/tokyo/A1310/A131002/13000340/"}]},
+  {"name":"Kanda Kikukawa","kind":"food","area":"akihabara","areaLabel":"Kanda","category":"unagi","categoryLabel":"Unagi","lat":35.6944199,"lon":139.7708136,"score":3.56,"summary":"Traditional Edo-style unagi since 1947. A dependable planned meal south of Akihabara.","detail":"Traditional unagi.","budget":"¥¥¥","access":"Reservations","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Kanda+Kikukawa+Kanda"},{"label":"Tabelog","url":"https://tabelog.com/en/tokyo/A1310/A131002/13000339/"}]},
+  {"name":"Ginza Hachigo","kind":"food","area":"ginza","areaLabel":"Higashi-Ginza","category":"ramen","categoryLabel":"Ramen","lat":35.6705477,"lon":139.77015,"score":3.9,"summary":"French-influenced clear-broth ramen and one of Ginza's major destination bowls. Go before Monday and check the current ticket or reservation procedure first.","detail":"Trip timing: closed Monday.","budget":"¥","access":"Check current access procedure","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Ginza+Hachigo"},{"label":"Tabelog","url":"https://tabelog.com/en/tokyo/A1301/A130101/13228602/"}]},
+  {"name":"Ginza Kagari Honten","kind":"food","area":"ginza","areaLabel":"Ginza","category":"ramen","categoryLabel":"Ramen","lat":35.6712019,"lon":139.76133149999998,"score":3.66,"summary":"Polished chicken-paitan ramen, open across the afternoon more reliably than many famous shops. Best flexible Ginza meal.","detail":"Flexible afternoon option.","budget":"¥","access":"Walk-in","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Ginza+Kagari+Honten"},{"label":"Tabelog","url":"https://tabelog.com/en/tokyo/A1301/A130101/13230021/"}]},
+  {"name":"Tonkatsu Aoki Ginza 8-chome","kind":"food","area":"ginza","areaLabel":"Ginza / Shimbashi","category":"katsu","categoryLabel":"Katsu","lat":35.6682225,"lon":139.7614816,"score":3.71,"summary":"Juicy premium-pork tonkatsu and a strong walk-in option at Ginza's southern edge.","detail":"Premium pork.","budget":"¥¥","access":"No reservations","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Tonkatsu+Aoki+Ginza+8+chome"},{"label":"Tabelog","url":"https://tabelog.com/en/tokyo/A1301/A130101/13219635/"}]},
+  {"name":"Tempura Kondo","kind":"food","area":"ginza","areaLabel":"Ginza","category":"tempura","categoryLabel":"Tempura","lat":35.6711696,"lon":139.7631786,"score":3.95,"summary":"Tabelog Award 2026 Bronze counter tempura. Treat this as a cancellation hunt, not a spontaneous walk-in.","detail":"High-end counter tempura.","budget":"¥¥¥¥","access":"Reserve","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Tempura+Kondo+Ginza"},{"label":"Tabelog","url":"https://tabelog.com/en/tokyo/A1301/A130101/13004993/"}]},
+  {"name":"Torie Ueno","kind":"food","area":"ueno","areaLabel":"Ueno / Okachimachi","category":"yakitori","categoryLabel":"Yakitori","lat":35.7057347,"lon":139.77316109999998,"summary":"A yakitori option near the Ueno and Okachimachi area. Check the current menu, hours, and seating before making a special trip.","detail":"Added local option; current details should be checked.","budget":"Check current pricing","access":"Check hours and seating","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Torie+Ueno+Tokyo"},{"label":"Tabelog search","url":"https://www.google.com/search?q=site%3Atabelog.com+Torie+Ueno+Tokyo"}]},
+  {"name":"Bentenyama Miyako Sushi","kind":"food","area":"asakusa","areaLabel":"Asakusa","category":"sushi","categoryLabel":"Sushi","lat":35.712995299999996,"lon":139.7977635,"summary":"A traditional sushi option in Asakusa. Check the current service format, price, and reservation policy before visiting.","detail":"Added local option; current details should be checked.","budget":"Check current pricing","access":"Check reservation policy","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Bentenyama+Miyako+Sushi+Asakusa+Tokyo"},{"label":"Tabelog search","url":"https://www.google.com/search?q=site%3Atabelog.com+Bentenyama+Miyako+Sushi+Asakusa"}]},
+  {"name":"Motsuyaki Daitoryo Ueno","kind":"food","area":"ueno","areaLabel":"Ueno / Ameyoko","category":"izakaya","categoryLabel":"Izakaya","lat":35.7087296,"lon":139.7741538,"summary":"A casual Ameyoko-area izakaya known for motsuyaki. Check current hours and ordering details before visiting.","detail":"Motsuyaki focus; current details should be checked.","budget":"Check current pricing","access":"Casual seating · check hours","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Motsuyaki+Daitoryo+Ueno+Tokyo"},{"label":"Tabelog search","url":"https://www.google.com/search?q=site%3Atabelog.com+Motsuyaki+Daitoryo+Ueno"}]},
+  {"name":"Toritsune Shizendo","kind":"food","area":"ueno","areaLabel":"Yushima / Ueno","category":"yakitori","categoryLabel":"Yakitori","lat":35.7039784,"lon":139.77269859999998,"summary":"A chicken-focused option associated with yakitori and oyakodon. Check the current menu, hours, and access rules before visiting.","detail":"Yakitori and oyakodon; current details should be checked.","budget":"Check current pricing","access":"Check hours and access","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Toritsune+Shizendo+Tokyo"},{"label":"Tabelog search","url":"https://www.google.com/search?q=site%3Atabelog.com+Toritsune+Shizendo+Tokyo"}]}
+]
+</script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous"></script>
+<script>
+"use strict";
+
+const places = JSON.parse(document.getElementById("places-data").textContent);
+const styles = {
+  hotel: { color: "#b42318", symbol: "H", label: "Hotel" },
+  coffee: { color: "#6b3e26", symbol: "C", label: "Coffee" },
+  ramen: { color: "#8f1d2c", symbol: "麺", label: "Ramen" },
+  tsukemen: { color: "#5b3f8c", symbol: "つ", label: "Tsukemen" },
+  katsu: { color: "#0b6b5b", symbol: "勝", label: "Katsu" },
+  soba: { color: "#49651f", symbol: "そ", label: "Soba" },
+  tempura: { color: "#9a4f00", symbol: "天", label: "Tempura" },
+  sukiyaki: { color: "#7b2f73", symbol: "す", label: "Sukiyaki" },
+  unagi: { color: "#303f76", symbol: "鰻", label: "Unagi" },
+  yakitori: { color: "#8c3b13", symbol: "焼", label: "Yakitori" },
+  sushi: { color: "#006878", symbol: "鮨", label: "Sushi" },
+  izakaya: { color: "#374151", symbol: "居", label: "Izakaya" }
+};
+const eastTokyoBounds = L.latLngBounds([35.663, 139.755], [35.723, 139.81]);
+const map = L.map("map", { zoomControl: true, minZoom: 11, maxZoom: 19 });
+map.fitBounds(eastTokyoBounds, { padding: [18, 18] });
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  maxZoom: 19,
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
+
+const areaButtons = [...document.querySelectorAll("[data-area]")];
+const categoryButtons = [...document.querySelectorAll("[data-category]")];
+const list = document.getElementById("place-list");
+const count = document.getElementById("result-count");
+const status = document.getElementById("location-status");
+let activeArea = "all";
+let activeCategory = "all";
+let lastPosition = null;
+let watchId = null;
+let currentMarker = null;
+let accuracyCircle = null;
+
+function makeMarkerIcon(place) {
+  const style = styles[place.category];
+  return L.divIcon({
+    className: "venue-marker",
+    html: `<span style="background:${style.color}"><b>${style.symbol}</b></span>`,
+    iconSize: [44, 44],
+    iconAnchor: [22, 39],
+    popupAnchor: [0, -37]
+  });
+}
+
+function makeLink(link) {
+  const anchor = document.createElement("a");
+  anchor.href = link.url;
+  anchor.textContent = link.label;
+  anchor.target = "_blank";
+  anchor.rel = "noopener noreferrer";
+  return anchor;
+}
+
+function makePopup(place) {
+  const popup = document.createElement("div");
+  popup.className = "popup";
+  const title = document.createElement("h3");
+  title.textContent = place.name;
+  popup.append(title);
+  const meta = document.createElement("p");
+  meta.textContent = `${place.areaLabel} · ${place.categoryLabel}${Number.isFinite(place.score) ? ` · Tabelog ${place.score.toFixed(2)}` : ""}`;
+  popup.append(meta);
+  const access = document.createElement("p");
+  access.textContent = `${place.budget} · ${place.access}`;
+  popup.append(access);
+  const summary = document.createElement("p");
+  summary.textContent = place.summary;
+  popup.append(summary);
+  const links = document.createElement("div");
+  links.className = "place-links";
+  place.links.forEach((link) => links.append(makeLink(link)));
+  popup.append(links);
+  return popup;
+}
+
+const markers = new Map();
+places.forEach((place) => {
+  const marker = L.marker([place.lat, place.lon], {
+    icon: makeMarkerIcon(place),
+    title: `${place.name}, ${place.categoryLabel}`,
+    alt: place.name,
+    keyboard: true
+  });
+  marker.bindPopup(() => makePopup(place));
+  markers.set(place.name, marker);
+});
+
+function setStatus(title, message) {
+  status.replaceChildren();
+  const strong = document.createElement("strong");
+  strong.textContent = title;
+  status.append(strong, document.createTextNode(message));
+}
+
+function distanceKm(from, place) {
+  const earthRadiusKm = 6371;
+  const radians = (degrees) => degrees * Math.PI / 180;
+  const latitudeDelta = radians(place.lat - from.lat);
+  const longitudeDelta = radians(place.lon - from.lon);
+  const startLatitude = radians(from.lat);
+  const endLatitude = radians(place.lat);
+  const a = Math.sin(latitudeDelta / 2) ** 2 + Math.cos(startLatitude) * Math.cos(endLatitude) * Math.sin(longitudeDelta / 2) ** 2;
+  return earthRadiusKm * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function formatDistance(km) {
+  return km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(1)} km`;
+}
+
+function matchesFilters(place) {
+  const areaMatches = activeArea === "all" || place.area === activeArea;
+  const categoryMatches = activeCategory === "all" || place.category === activeCategory;
+  return areaMatches && categoryMatches;
+}
+
+function renderList(visiblePlaces) {
+  list.replaceChildren();
+  if (visiblePlaces.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "empty";
+    empty.textContent = "No places match both filters. Try another area or type.";
+    list.append(empty);
+    return;
+  }
+  visiblePlaces.forEach((place) => {
+    const article = document.createElement("article");
+    article.className = "place-card";
+    article.style.setProperty("--place-accent", styles[place.category].color);
+    const cardTop = document.createElement("div");
+    cardTop.className = "card-top";
+    const title = document.createElement("h3");
+    title.textContent = place.name;
+    cardTop.append(title);
+    if (lastPosition) {
+      const distance = document.createElement("span");
+      distance.className = "distance";
+      distance.textContent = formatDistance(distanceKm(lastPosition, place));
+      distance.setAttribute("aria-label", `${distance.textContent} straight-line distance`);
+      cardTop.append(distance);
+    }
+    article.append(cardTop);
+    const meta = document.createElement("div");
+    meta.className = "meta";
+    const labels = [place.areaLabel, place.categoryLabel, place.budget, place.access];
+    labels.forEach((label) => {
+      const tag = document.createElement("span");
+      tag.className = "tag";
+      tag.textContent = label;
+      meta.append(tag);
+    });
+    if (Number.isFinite(place.score)) {
+      const score = document.createElement("span");
+      score.className = "tag score";
+      score.textContent = `Tabelog ${place.score.toFixed(2)}`;
+      meta.append(score);
+    }
+    article.append(meta);
+    const summary = document.createElement("p");
+    summary.textContent = place.summary;
+    article.append(summary);
+    const detail = document.createElement("p");
+    detail.className = "detail";
+    detail.textContent = place.detail;
+    article.append(detail);
+    const links = document.createElement("div");
+    links.className = "place-links";
+    place.links.forEach((link) => links.append(makeLink(link)));
+    article.append(links);
+    list.append(article);
+  });
+}
+
+function render() {
+  const visiblePlaces = places.filter(matchesFilters);
+  markers.forEach((marker, name) => {
+    const visible = visiblePlaces.some((place) => place.name === name);
+    if (visible && !map.hasLayer(marker)) marker.addTo(map);
+    if (!visible && map.hasLayer(marker)) map.removeLayer(marker);
+  });
+  if (lastPosition) visiblePlaces.sort((a, b) => distanceKm(lastPosition, a) - distanceKm(lastPosition, b));
+  count.textContent = `${visiblePlaces.length} ${visiblePlaces.length === 1 ? "place" : "places"}${lastPosition ? " · nearest first" : ""}`;
+  renderList(visiblePlaces);
+}
+
+function fitVisiblePlaces() {
+  const visiblePlaces = places.filter(matchesFilters);
+  if (visiblePlaces.length === 0) return;
+  const bounds = L.latLngBounds(visiblePlaces.map((place) => [place.lat, place.lon]));
+  map.fitBounds(bounds, { padding: [32, 32], maxZoom: 16 });
+}
+
+function activateFilter(buttons, selected) {
+  buttons.forEach((button) => button.setAttribute("aria-pressed", String(button === selected)));
+}
+
+areaButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    activeArea = button.dataset.area;
+    activateFilter(areaButtons, button);
+    render();
+    fitVisiblePlaces();
+  });
+});
+
+categoryButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    activeCategory = button.dataset.category;
+    activateFilter(categoryButtons, button);
+    render();
+    fitVisiblePlaces();
+  });
+});
+
+document.getElementById("reset-map").addEventListener("click", () => {
+  map.fitBounds(eastTokyoBounds, { padding: [18, 18] });
+});
+
+function updateLocation(position, recenter) {
+  const latitude = position.coords.latitude;
+  const longitude = position.coords.longitude;
+  const accuracy = position.coords.accuracy;
+  lastPosition = { lat: latitude, lon: longitude };
+  if (!currentMarker) {
+    currentMarker = L.marker([latitude, longitude], {
+      icon: L.divIcon({ className: "location-marker", html: "<span></span>", iconSize: [44, 44], iconAnchor: [22, 22] }),
+      title: "Your current location",
+      alt: "Your current location",
+      zIndexOffset: 1000
+    }).addTo(map).bindPopup("Your current location");
+    accuracyCircle = L.circle([latitude, longitude], {
+      radius: accuracy,
+      color: "#1261a0",
+      fillColor: "#66a9d8",
+      fillOpacity: 0.16,
+      weight: 2,
+      interactive: false
+    }).addTo(map);
+  } else {
+    currentMarker.setLatLng([latitude, longitude]);
+    accuracyCircle.setLatLng([latitude, longitude]).setRadius(accuracy);
+  }
+  if (recenter) map.setView([latitude, longitude], Math.max(map.getZoom(), 15));
+  setStatus(`Located to about ${Math.round(accuracy)} m`, "Distances are straight-line estimates. Live updates are on. This guide does not save your position; map tiles load from OpenStreetMap.");
+  render();
+}
+
+function locationErrorMessage(error) {
+  if (error.code === 1) return ["Location denied", "Allow location in browser settings, then tap Locate me again."];
+  if (error.code === 2) return ["Location unavailable", "Your device could not determine a position. Try again outside or with location services on."];
+  if (error.code === 3) return ["Location timed out", "Tap Locate me to try again."];
+  return ["Location unavailable", "Tap Locate me to try again."];
+}
+
+function handleLocationError(error) {
+  const message = locationErrorMessage(error);
+  setStatus(message[0], message[1]);
+}
+
+function startLocationWatch(position) {
+  updateLocation(position, true);
+  if (watchId === null) {
+    watchId = navigator.geolocation.watchPosition(
+      (nextPosition) => updateLocation(nextPosition, false),
+      handleLocationError,
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+    );
+  }
+}
+
+document.getElementById("locate").addEventListener("click", () => {
+  if (window.location.protocol === "file:") {
+    setStatus("Location unavailable from a file", "Preview on localhost or publish to GitHub Pages. GitHub Pages HTTPS supports geolocation.");
+    return;
+  }
+  const isLocalhost = ["localhost", "127.0.0.1", "::1"].includes(window.location.hostname);
+  if (window.location.protocol !== "https:" && !isLocalhost) {
+    setStatus("HTTPS required", "Use GitHub Pages HTTPS or localhost for geolocation.");
+    return;
+  }
+  if (!("geolocation" in navigator)) {
+    setStatus("Location unsupported", "This browser does not provide geolocation.");
+    return;
+  }
+  if (lastPosition && watchId !== null) {
+    map.setView([lastPosition.lat, lastPosition.lon], Math.max(map.getZoom(), 15));
+    setStatus("Live location is on", "Recentered on your latest position. This guide does not save your position; map tiles load from OpenStreetMap.");
+    return;
+  }
+  setStatus("Finding your location", "Your browser may ask for permission.");
+  navigator.geolocation.getCurrentPosition(
+    startLocationWatch,
+    handleLocationError,
+    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+  );
+});
+
+let mapSizeRefreshTimer = null;
+function scheduleMapSizeRefresh() {
+  window.clearTimeout(mapSizeRefreshTimer);
+  mapSizeRefreshTimer = window.setTimeout(() => {
+    map.invalidateSize({ pan: false, debounceMoveend: true });
+  }, 150);
+}
+
+window.addEventListener("load", scheduleMapSizeRefresh);
+window.addEventListener("resize", scheduleMapSizeRefresh);
+window.addEventListener("orientationchange", scheduleMapSizeRefresh);
+
+const legend = document.getElementById("legend");
+Object.values(styles).forEach((style) => {
+  const item = document.createElement("span");
+  item.className = "legend-item";
+  const dot = document.createElement("span");
+  dot.className = "legend-dot";
+  dot.style.background = style.color;
+  dot.textContent = style.symbol;
+  item.append(dot, document.createTextNode(style.label));
+  legend.append(item);
+});
+
+render();
+</script>
+</body>
+</html>
