@@ -1620,11 +1620,9 @@ function makeMarkerIcon(place) {
   });
 }
 
-const tabelogAppLauncherUrl = "https://tabelog-tourists.onelink.me/3eEh?af_xp=custom&pid=tabelog_tourists&c=tokyo_citywide_guide&af_force_deeplink=true";
-
 function makeLink(link) {
   const anchor = document.createElement("a");
-  anchor.href = link.label === "Tabelog" ? tabelogAppLauncherUrl : link.url;
+  anchor.href = link.url;
   anchor.textContent = link.label;
   anchor.target = "_blank";
   anchor.rel = "noopener noreferrer";
