@@ -29,8 +29,10 @@ h1 { margin: 0; color: #ffffff; font-family: "Avenir Next Condensed", "Arial Nar
 .tripline strong { margin-right: 5px; color: #ffffff; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; }
 .map-shell { position: relative; background: #cad7de; }
 #map { width: 100%; height: 336px; background: #dbe6ec; }
-.map-reset { position: absolute; z-index: 1000; top: 9px; right: 9px; border: 2px solid rgba(23, 63, 95, 0.28); border-radius: 8px; padding: 7px 11px; background: #ffffff; color: var(--navy); font-size: 12px; font-weight: 850; box-shadow: 0 2px 8px rgba(23, 63, 95, 0.2); }
-.map-reset:active { background: var(--mist); }
+.map-controls { position: absolute; z-index: 1000; top: 9px; right: 9px; display: flex; flex-direction: column; gap: 8px; }
+.map-control-button { display: grid; width: 44px; height: 44px; min-width: 44px; min-height: 44px; place-items: center; border: 1px solid rgba(23, 63, 95, 0.3); border-radius: 9px; padding: 0; background: #ffffff; color: var(--navy); box-shadow: 0 2px 8px rgba(23, 63, 95, 0.22); }
+.map-control-button svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2; }
+.map-control-button:active { background: var(--mist); transform: translateY(1px); }
 .leaflet-control-zoom a { width: 44px !important; height: 44px !important; line-height: 44px !important; color: var(--navy) !important; }
 .leaflet-control-attribution { max-width: 78%; font-size: 9px; }
 .leaflet-popup-close-button { width: 44px !important; height: 44px !important; font-size: 24px !important; line-height: 36px !important; }
@@ -43,10 +45,9 @@ h1 { margin: 0; color: #ffffff; font-family: "Avenir Next Condensed", "Arial Nar
 .venue-marker span { display: flex; width: 32px; height: 32px; align-items: center; justify-content: center; overflow: visible; border: 2px solid #ffffff; border-radius: 50%; background-clip: padding-box; color: #ffffff; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; font-size: 18px; font-style: normal; font-weight: 400; line-height: 1; text-align: center; white-space: nowrap; box-shadow: 0 1px 5px rgba(16, 42, 67, 0.48); }
 .location-marker { display: grid !important; place-items: center; border: 0; background: transparent; }
 .location-marker span { display: block; width: 20px; height: 20px; border: 4px solid #ffffff; border-radius: 50%; background: #1261a0; box-shadow: 0 0 0 2px #1261a0, 0 2px 8px rgba(16, 42, 67, 0.35); }
-.map-actions { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: center; min-height: 60px; padding: 7px 12px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: #ffffff; }
-.locate-button { border: 0; border-radius: 8px; padding: 8px 14px; background: var(--red); color: #ffffff; font-weight: 850; box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.18); }
-.locate-button:active { transform: translateY(1px); }
-.location-copy { margin: 0; color: var(--muted); font-size: 11px; line-height: 1.3; }
+.location-strip { display: flex; min-height: 48px; align-items: center; gap: 9px; padding: 7px 13px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: #ffffff; }
+.location-status-dot { width: 8px; height: 8px; flex: 0 0 8px; border-radius: 50%; background: #1261a0; box-shadow: 0 0 0 3px #dcecf7; }
+.location-copy { min-width: 0; margin: 0; color: var(--muted); font-size: 11px; line-height: 1.3; }
 .location-copy strong { display: block; color: var(--ink); font-size: 12px; }
 .results-head { display: flex; min-height: 49px; align-items: center; justify-content: space-between; gap: 12px; padding: 7px 15px 6px; border-bottom: 1px solid var(--line); background: var(--paper); }
 .results-head h2 { margin: 0; color: var(--navy); font-family: "Avenir Next Condensed", "Arial Narrow", "Noto Sans", sans-serif; font-size: 20px; line-height: 1; }
@@ -63,6 +64,10 @@ h1 { margin: 0; color: #ffffff; font-family: "Avenir Next Condensed", "Arial Nar
 .place-card::before { position: absolute; top: 0; bottom: 0; left: 0; width: 4px; background: var(--place-accent); content: ""; }
 .card-top { display: flex; gap: 9px; align-items: start; justify-content: space-between; }
 .place-card h3 { margin: 0; color: var(--ink); font-size: 16px; line-height: 1.2; }
+.place-name-button { display: block; width: 100%; min-width: 0; min-height: 44px; margin: -10px 0; border: 0; border-radius: 6px; padding: 10px 22px 10px 0; background: transparent; color: var(--navy); font-weight: 850; line-height: 1.2; text-align: left; cursor: pointer; }
+.place-name-button::after { display: inline-block; width: 7px; height: 7px; margin-left: 8px; transform: rotate(45deg) translateY(-1px); border-top: 2px solid currentColor; border-right: 2px solid currentColor; opacity: 0.5; content: ""; }
+.place-name-button:hover { color: #9f231a; }
+.place-name-button:active { background: var(--mist); transform: translateY(1px); }
 .distance { flex: 0 0 auto; border-radius: 5px; padding: 3px 6px; background: var(--mist); color: #243b53; font-size: 10px; font-weight: 850; white-space: nowrap; }
 .meta { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
 .tag { display: inline-flex; min-height: 23px; align-items: center; border-radius: 4px; padding: 2px 6px; background: #edf2f5; color: #334e68; font-size: 10px; font-weight: 780; }
@@ -111,10 +116,13 @@ h1 { margin: 0; color: #ffffff; font-family: "Avenir Next Condensed", "Arial Nar
 <section aria-label="Interactive venue map">
 <div class="map-shell">
 <div id="map" role="region" aria-label="Map of East Tokyo venues"></div>
-<button class="map-reset" id="reset-map" type="button" aria-label="Reset map to East Tokyo">Reset view</button>
+<div class="map-controls" aria-label="Map controls">
+<button class="map-control-button" id="reset-map" type="button" aria-label="Show East Tokyo overview" title="Show East Tokyo overview"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 4H4v5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+<button class="map-control-button" id="locate" type="button" aria-label="Find my current location" title="Find my current location"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></button>
 </div>
-<div class="map-actions">
-<button class="locate-button" id="locate" type="button">Locate me</button>
+</div>
+<div class="location-strip">
+<span class="location-status-dot" aria-hidden="true"></span>
 <p class="location-copy" id="location-status" role="status" aria-live="polite"><strong>Location starts automatically</strong>Use Locate me to retry or recenter. This guide does not save your position; map tiles load from Esri.</p>
 </div>
 </section>
@@ -1677,7 +1685,13 @@ function renderList(visiblePlaces) {
     const cardTop = document.createElement("div");
     cardTop.className = "card-top";
     const title = document.createElement("h3");
-    title.textContent = place.name;
+    const nameButton = document.createElement("button");
+    nameButton.className = "place-name-button";
+    nameButton.type = "button";
+    nameButton.textContent = place.name;
+    nameButton.setAttribute("aria-label", `Show ${place.name} on the map`);
+    nameButton.addEventListener("click", () => focusPlace(place));
+    title.append(nameButton);
     cardTop.append(title);
     if (lastPosition) {
       const distance = document.createElement("span");
@@ -1736,6 +1750,24 @@ function fitVisiblePlaces() {
   if (visiblePlaces.length === 0) return;
   const bounds = L.latLngBounds(visiblePlaces.map((place) => [place.lat, place.lon]));
   map.fitBounds(bounds, { padding: [32, 32], maxZoom: 16 });
+}
+
+function focusPlace(place) {
+  const marker = markers.get(place.name);
+  if (!marker) return;
+  const revealMarker = () => {
+    map.setView(marker.getLatLng(), Math.max(map.getZoom(), 16));
+    marker.openPopup();
+    if (window.matchMedia("(max-width: 520px)").matches) {
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      document.querySelector(".map-shell").scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "start" });
+    }
+  };
+  if (typeof venueLayer.zoomToShowLayer === "function") {
+    venueLayer.zoomToShowLayer(marker, revealMarker);
+  } else {
+    revealMarker();
+  }
 }
 
 function activateFilter(buttons, selected) {
