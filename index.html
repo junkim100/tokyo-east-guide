@@ -34,9 +34,12 @@ h1 { margin: 0; color: #ffffff; font-family: "Avenir Next Condensed", "Arial Nar
 .leaflet-popup-close-button { width: 44px !important; height: 44px !important; font-size: 24px !important; line-height: 36px !important; }
 .leaflet-pane.leaflet-marker-pane { z-index: 650; }
 .leaflet-pane.leaflet-popup-pane { z-index: 700; }
+.leaflet-pane.leaflet-district-labels-pane { z-index: 450; pointer-events: none; }
+.district-label { border: 0; background: transparent; pointer-events: none; }
+.district-label span { display: block; width: max-content; transform: translate(-50%, -50%); border-radius: 3px; padding: 2px 4px; background: rgba(248, 247, 243, 0.82); color: #243b53; font-size: 10px; font-weight: 850; line-height: 1.1; letter-spacing: 0.015em; text-shadow: 0 1px 0 #ffffff; white-space: nowrap; }
 .venue-marker { display: grid !important; place-items: center; border: 0; background: transparent; }
 .venue-marker span { display: grid; width: 30px; height: 30px; place-items: center; border: 2px solid #ffffff; border-radius: 50%; color: #ffffff; font-size: 11px; font-weight: 900; line-height: 1; box-shadow: 0 1px 5px rgba(16, 42, 67, 0.48); }
-.venue-marker b { line-height: 1; }
+.venue-marker b { font-size: 10px; line-height: 1; letter-spacing: -0.02em; }
 .location-marker { display: grid !important; place-items: center; border: 0; background: transparent; }
 .location-marker span { display: block; width: 20px; height: 20px; border: 4px solid #ffffff; border-radius: 50%; background: #1261a0; box-shadow: 0 0 0 2px #1261a0, 0 2px 8px rgba(16, 42, 67, 0.35); }
 .map-actions { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: center; min-height: 60px; padding: 7px 12px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: #ffffff; }
@@ -99,7 +102,7 @@ h1 { margin: 0; color: #ffffff; font-family: "Avenir Next Condensed", "Arial Nar
 <main class="app">
 <header class="app-header">
 <div class="brand-row">
-<div class="brand"><span class="route-badge" aria-hidden="true">東</span><h1>East Tokyo</h1></div>
+<div class="brand"><span class="route-badge" aria-hidden="true">E</span><h1>East Tokyo</h1></div>
 <p class="dates">Sep 4 to 7, 2026</p>
 </div>
 <p class="tripline"><strong>Base</strong>Tosei Hotel Cocone Asakusa</p>
@@ -111,7 +114,7 @@ h1 { margin: 0; color: #ffffff; font-family: "Avenir Next Condensed", "Arial Nar
 </div>
 <div class="map-actions">
 <button class="locate-button" id="locate" type="button">Locate me</button>
-<p class="location-copy" id="location-status" role="status" aria-live="polite"><strong>Location off</strong>This guide does not save your position; map tiles load from OpenStreetMap.</p>
+<p class="location-copy" id="location-status" role="status" aria-live="polite"><strong>Location off</strong>This guide does not save your position; map tiles load from Esri.</p>
 </div>
 </section>
 <section aria-labelledby="results-title">
@@ -209,24 +212,50 @@ const places = JSON.parse(document.getElementById("places-data").textContent);
 const styles = {
   hotel: { color: "#b42318", symbol: "H", label: "Hotel" },
   coffee: { color: "#6b3e26", symbol: "C", label: "Coffee" },
-  ramen: { color: "#8f1d2c", symbol: "麺", label: "Ramen" },
-  tsukemen: { color: "#5b3f8c", symbol: "つ", label: "Tsukemen" },
-  katsu: { color: "#0b6b5b", symbol: "勝", label: "Katsu" },
-  soba: { color: "#49651f", symbol: "そ", label: "Soba" },
-  tempura: { color: "#9a4f00", symbol: "天", label: "Tempura" },
-  sukiyaki: { color: "#7b2f73", symbol: "す", label: "Sukiyaki" },
-  unagi: { color: "#303f76", symbol: "鰻", label: "Unagi" },
-  yakitori: { color: "#8c3b13", symbol: "焼", label: "Yakitori" },
-  sushi: { color: "#006878", symbol: "鮨", label: "Sushi" },
-  izakaya: { color: "#374151", symbol: "居", label: "Izakaya" }
+  ramen: { color: "#8f1d2c", symbol: "R", label: "Ramen" },
+  tsukemen: { color: "#5b3f8c", symbol: "TS", label: "Tsukemen" },
+  katsu: { color: "#0b6b5b", symbol: "K", label: "Katsu" },
+  soba: { color: "#49651f", symbol: "SO", label: "Soba" },
+  tempura: { color: "#9a4f00", symbol: "TE", label: "Tempura" },
+  sukiyaki: { color: "#7b2f73", symbol: "SK", label: "Sukiyaki" },
+  unagi: { color: "#303f76", symbol: "U", label: "Unagi" },
+  yakitori: { color: "#8c3b13", symbol: "Y", label: "Yakitori" },
+  sushi: { color: "#006878", symbol: "SU", label: "Sushi" },
+  izakaya: { color: "#374151", symbol: "I", label: "Izakaya" }
 };
 const eastTokyoBounds = L.latLngBounds([35.663, 139.755], [35.723, 139.81]);
 const map = L.map("map", { zoomControl: true, minZoom: 11, maxZoom: 19 });
 map.fitBounds(eastTokyoBounds, { padding: [18, 18] });
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
+  maxNativeZoom: 16,
   maxZoom: 19,
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  attribution: 'Tiles &copy; <a href="https://www.esri.com/">Esri</a>, HERE, Garmin, OpenStreetMap contributors, and the GIS user community'
 }).addTo(map);
+
+map.createPane("district-labels");
+const districtLabels = [
+  { name: "Asakusa", lat: 35.715, lon: 139.798 },
+  { name: "Ueno", lat: 35.714, lon: 139.776 },
+  { name: "Akihabara", lat: 35.7005, lon: 139.773 },
+  { name: "Kanda", lat: 35.6915, lon: 139.771 },
+  { name: "Ginza", lat: 35.6705, lon: 139.765 },
+  { name: "Kuramae", lat: 35.7045, lon: 139.792 },
+  { name: "Kiyosumi-Shirakawa", lat: 35.681, lon: 139.804 },
+  { name: "Nihombashi/Hamacho", lat: 35.6845, lon: 139.789 }
+];
+districtLabels.forEach((district) => {
+  L.marker([district.lat, district.lon], {
+    pane: "district-labels",
+    icon: L.divIcon({
+      className: "district-label",
+      html: `<span>${district.name}</span>`,
+      iconSize: [0, 0],
+      iconAnchor: [0, 0]
+    }),
+    interactive: false,
+    keyboard: false
+  }).addTo(map);
+});
 
 const areaButtons = [...document.querySelectorAll("[data-area]")];
 const categoryButtons = [...document.querySelectorAll("[data-category]")];
@@ -452,7 +481,7 @@ function updateLocation(position, recenter) {
     accuracyCircle.setLatLng([latitude, longitude]).setRadius(accuracy);
   }
   if (recenter) map.setView([latitude, longitude], Math.max(map.getZoom(), 15));
-  setStatus(`Located to about ${Math.round(accuracy)} m`, "Straight-line distances, nearest first. This guide does not save your position; map tiles load from OpenStreetMap.");
+  setStatus(`Located to about ${Math.round(accuracy)} m`, "Straight-line distances, nearest first. This guide does not save your position; map tiles load from Esri.");
   render();
 }
 
@@ -495,7 +524,7 @@ document.getElementById("locate").addEventListener("click", () => {
   }
   if (lastPosition && watchId !== null) {
     map.setView([lastPosition.lat, lastPosition.lon], Math.max(map.getZoom(), 15));
-    setStatus("Live location is on", "Recentered. This guide does not save your position; map tiles load from OpenStreetMap.");
+    setStatus("Live location is on", "Recentered. This guide does not save your position; map tiles load from Esri.");
     return;
   }
   setStatus("Finding your location", "Your browser may ask for permission.");

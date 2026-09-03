@@ -2,6 +2,8 @@
 
 A mobile map-first guide for an East Tokyo trip, published as a static GitHub Pages project with no build step, API key, or backend.
 
+The map uses Leaflet with credential-free Esri label-free tiles and custom English district labels.
+
 ## Preview locally
 
 From the project directory, run:
