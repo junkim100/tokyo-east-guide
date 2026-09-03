@@ -1,6 +1,6 @@
-# East Tokyo Pocket Guide
+# Tokyo Pocket Guide
 
-A mobile map-first guide for an East Tokyo trip, published as a static GitHub Pages project with no build step, API key, or backend.
+A selective, mobile map-first guide for Tokyo, centered on an eastern Tokyo hotel base and expanded with destination-worthy recommendations elsewhere in the city. It is published as a static GitHub Pages project with no build step, API key, or backend.
 
 The map uses Leaflet with credential-free Esri label-free tiles and custom English district labels.
 
@@ -23,4 +23,4 @@ Open <http://localhost:8000/> in a browser. Do not open `index.html` directly wi
 5. Select the default branch, choose the `/ (root)` folder, and save.
 6. Wait for the Pages deployment to finish, then open <https://junkim100.github.io/tokyo-east-guide/>.
 
-GitHub Pages serves the project over HTTPS. Browser geolocation requires HTTPS or localhost, asks for permission only after **Locate me** is tapped, and is unavailable when the page is opened directly from the filesystem.
+GitHub Pages serves the project over HTTPS. Browser geolocation requires HTTPS or localhost, starts automatically after page load, and asks for permission on first use. The in-map location button can recenter or reconnect tracking. Geolocation is unavailable when the page is opened directly from the filesystem.

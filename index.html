@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#173f5f">
-<title>East Tokyo Pocket Guide</title>
+<title>Tokyo Citywide Pocket Guide</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" crossorigin="anonymous">
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" crossorigin="anonymous">
@@ -58,6 +58,7 @@ h1 { margin: 0; color: #ffffff; font-family: "Avenir Next Condensed", "Arial Nar
 .chip-track { display: flex; gap: 6px; width: 100%; overflow-x: auto; padding: 0 14px 2px; overscroll-behavior-inline: contain; scrollbar-width: none; scroll-padding-inline: 14px; }
 .chip-track::-webkit-scrollbar { display: none; }
 .chip { flex: 0 0 auto; border: 1px solid #9cafb9; border-radius: 22px; padding: 8px 13px; background: #ffffff; color: #243b53; font-size: 12px; font-weight: 780; line-height: 1.1; white-space: nowrap; }
+.chip-symbol { display: inline-block; width: 1.4em; margin-right: 4px; text-align: center; }
 .chip[aria-pressed="true"] { border-color: var(--navy); background: var(--navy); color: #ffffff; }
 .place-list { display: grid; gap: 8px; padding: 9px 10px 18px; }
 .place-card { position: relative; overflow: hidden; border: 1px solid var(--line); border-radius: 10px; padding: 11px 11px 11px 15px; background: #ffffff; box-shadow: 0 2px 8px rgba(23, 63, 95, 0.06); }
@@ -108,22 +109,22 @@ h1 { margin: 0; color: #ffffff; font-family: "Avenir Next Condensed", "Arial Nar
 <main class="app">
 <header class="app-header">
 <div class="brand-row">
-<div class="brand"><span class="route-badge" aria-hidden="true">E</span><h1>East Tokyo</h1></div>
+<div class="brand"><span class="route-badge" aria-hidden="true">T</span><h1>Tokyo Citywide</h1></div>
 <p class="dates">Sep 4 to 7, 2026</p>
 </div>
 <p class="tripline"><strong>Base</strong>Tosei Hotel Cocone Asakusa</p>
 </header>
 <section aria-label="Interactive venue map">
 <div class="map-shell">
-<div id="map" role="region" aria-label="Map of East Tokyo venues"></div>
+<div id="map" role="region" aria-label="Map of Tokyo venues"></div>
 <div class="map-controls" aria-label="Map controls">
-<button class="map-control-button" id="reset-map" type="button" aria-label="Show East Tokyo overview" title="Show East Tokyo overview"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 4H4v5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+<button class="map-control-button" id="reset-map" type="button" aria-label="Show citywide Tokyo overview" title="Show citywide Tokyo overview"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 4H4v5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
 <button class="map-control-button" id="locate" type="button" aria-label="Find my current location" title="Find my current location"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></button>
 </div>
 </div>
 <div class="location-strip">
 <span class="location-status-dot" aria-hidden="true"></span>
-<p class="location-copy" id="location-status" role="status" aria-live="polite"><strong>Location starts automatically</strong>Use Locate me to retry or recenter. This guide does not save your position; map tiles load from Esri.</p>
+<p class="location-copy" id="location-status" role="status" aria-live="polite"><strong>Location starts automatically</strong>Use the map’s location button to retry or recenter. This guide does not save your position; map tiles load from Esri.</p>
 </div>
 </section>
 <section aria-labelledby="results-title">
@@ -141,32 +142,38 @@ h1 { margin: 0; color: #ffffff; font-family: "Avenir Next Condensed", "Arial Nar
 <button class="chip" type="button" data-area="akihabara" aria-pressed="false">Akihabara/Kanda</button>
 <button class="chip" type="button" data-area="ginza" aria-pressed="false">Ginza</button>
 <button class="chip" type="button" data-area="east" aria-pressed="false">East side</button>
+<button class="chip" type="button" data-area="shibuya" aria-pressed="false">Shibuya/Harajuku</button>
+<button class="chip" type="button" data-area="ebisu" aria-pressed="false">Ebisu/Nakameguro</button>
+<button class="chip" type="button" data-area="shinjuku" aria-pressed="false">Shinjuku/Kagurazaka</button>
+<button class="chip" type="button" data-area="roppongi" aria-pressed="false">Roppongi/Azabu</button>
+<button class="chip" type="button" data-area="setagaya" aria-pressed="false">Shimokitazawa/Setagaya</button>
+<button class="chip" type="button" data-area="west" aria-pressed="false">West detours</button>
 </div>
 </div>
 <div class="filter-row">
 <p class="filter-label">Food / type</p>
 <div class="chip-track" id="category-filters" role="group" aria-label="Filter by category">
 <button class="chip" type="button" data-category="all" aria-pressed="true">All types</button>
-<button class="chip" type="button" data-category="hotel" aria-pressed="false">Hotel</button>
-<button class="chip" type="button" data-category="coffee" aria-pressed="false">Coffee</button>
-<button class="chip" type="button" data-category="ramen" aria-pressed="false">Ramen</button>
-<button class="chip" type="button" data-category="tsukemen" aria-pressed="false">Tsukemen</button>
-<button class="chip" type="button" data-category="katsu" aria-pressed="false">Katsu</button>
-<button class="chip" type="button" data-category="soba" aria-pressed="false">Soba</button>
-<button class="chip" type="button" data-category="tempura" aria-pressed="false">Tempura</button>
-<button class="chip" type="button" data-category="sukiyaki" aria-pressed="false">Sukiyaki</button>
-<button class="chip" type="button" data-category="unagi" aria-pressed="false">Unagi</button>
-<button class="chip" type="button" data-category="yakitori" aria-pressed="false">Yakitori</button>
-<button class="chip" type="button" data-category="sushi" aria-pressed="false">Sushi</button>
-<button class="chip" type="button" data-category="izakaya" aria-pressed="false">Izakaya</button>
-<button class="chip" type="button" data-category="kaiseki" aria-pressed="false">Kaiseki</button>
-<button class="chip" type="button" data-category="yakiniku" aria-pressed="false">Yakiniku</button>
-<button class="chip" type="button" data-category="udon" aria-pressed="false">Udon</button>
-<button class="chip" type="button" data-category="curry" aria-pressed="false">Curry</button>
-<button class="chip" type="button" data-category="yoshoku" aria-pressed="false">Yoshoku</button>
-<button class="chip" type="button" data-category="anago" aria-pressed="false">Anago</button>
-<button class="chip" type="button" data-category="rice" aria-pressed="false">Rice dishes</button>
-<button class="chip" type="button" data-category="oden" aria-pressed="false">Oden</button>
+<button class="chip" type="button" data-category="hotel" aria-pressed="false"><span class="chip-symbol" aria-hidden="true">🏨</span>Hotel</button>
+<button class="chip" type="button" data-category="coffee" aria-pressed="false"><span class="chip-symbol" aria-hidden="true">☕</span>Coffee</button>
+<button class="chip" type="button" data-category="ramen" aria-pressed="false"><span class="chip-symbol" aria-hidden="true">🍜</span>Ramen</button>
+<button class="chip" type="button" data-category="tsukemen" aria-pressed="false"><span class="chip-symbol" aria-hidden="true">🥢</span>Tsukemen</button>
+<button class="chip" type="button" data-category="katsu" aria-pressed="false"><span class="chip-symbol" aria-hidden="true">🐷</span>Katsu</button>
+<button class="chip" type="button" data-category="soba" aria-pressed="false"><span class="chip-symbol" aria-hidden="true">🌾</span>Soba</button>
+<button class="chip" type="button" data-category="tempura" aria-pressed="false"><span class="chip-symbol" aria-hidden="true">🍤</span>Tempura</button>
+<button class="chip" type="button" data-category="sukiyaki" aria-pressed="false"><span class="chip-symbol" aria-hidden="true">🍲</span>Sukiyaki</button>
+<button class="chip" type="button" data-category="unagi" aria-pressed="false"><span class="chip-symbol" aria-hidden="true">🐟</span>Unagi</button>
+<button class="chip" type="button" data-category="yakitori" aria-pressed="false"><span class="chip-symbol" aria-hidden="true">🍢</span>Yakitori</button>
+<button class="chip" type="button" data-category="sushi" aria-pressed="false"><span class="chip-symbol" aria-hidden="true">🍣</span>Sushi</button>
+<button class="chip" type="button" data-category="izakaya" aria-pressed="false"><span class="chip-symbol" aria-hidden="true">🍶</span>Izakaya</button>
+<button class="chip" type="button" data-category="kaiseki" aria-pressed="false"><span class="chip-symbol" aria-hidden="true">🍱</span>Kaiseki</button>
+<button class="chip" type="button" data-category="yakiniku" aria-pressed="false"><span class="chip-symbol" aria-hidden="true">🥩</span>Yakiniku</button>
+<button class="chip" type="button" data-category="udon" aria-pressed="false"><span class="chip-symbol" aria-hidden="true">🍥</span>Udon</button>
+<button class="chip" type="button" data-category="curry" aria-pressed="false"><span class="chip-symbol" aria-hidden="true">🍛</span>Curry</button>
+<button class="chip" type="button" data-category="yoshoku" aria-pressed="false"><span class="chip-symbol" aria-hidden="true">🍽️</span>Yoshoku</button>
+<button class="chip" type="button" data-category="anago" aria-pressed="false"><span class="chip-symbol" aria-hidden="true">🐠</span>Anago</button>
+<button class="chip" type="button" data-category="rice" aria-pressed="false"><span class="chip-symbol" aria-hidden="true">🍚</span>Rice dishes</button>
+<button class="chip" type="button" data-category="oden" aria-pressed="false"><span class="chip-symbol" aria-hidden="true">🥘</span>Oden</button>
 </div>
 </div>
 </div>
@@ -190,24 +197,24 @@ h1 { margin: 0; color: #ffffff; font-family: "Avenir Next Condensed", "Arial Nar
   {"name":"Tosei Hotel Cocone Asakusa","kind":"hotel","area":"asakusa","areaLabel":"Asakusa","category":"hotel","categoryLabel":"Hotel","lat":35.7166187,"lon":139.7982778,"summary":"Trip base at 3-26-10 Asakusa.","detail":"Late arrival: notify the hotel if you may arrive after midnight.","budget":"Stay","access":"Base hotel","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Tosei+Hotel+Cocone+Asakusa"}]},
   {"name":"Fuglen Asakusa","kind":"coffee","area":"asakusa","areaLabel":"Asakusa","category":"coffee","categoryLabel":"Coffee","lat":35.7144526,"lon":139.7939807,"summary":"Global Nordic name with light-roast coffee, waffles, and cocktails at night. The easiest serious coffee stop from the hotel.","detail":"Best role: default morning or late fallback.","budget":"¥","access":"8am to late · walk-in","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Fuglen+Asakusa"},{"label":"Official","url":"https://fuglencoffee.jp/pages/fuglen-asakusa"}]},
   {"name":"Leaves Coffee Roasters","kind":"coffee","area":"asakusa","areaLabel":"Kuramae / Sumida","category":"coffee","categoryLabel":"Coffee","lat":35.702705099999996,"lon":139.7978326,"summary":"Internationally recognized Tokyo roaster with precise, fruit-forward light roasts. Cross the river from Kuramae.","detail":"Best role: highest-priority roaster near the base. Check the day's opening hours.","budget":"¥¥","access":"Destination cup · check hours","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Leaves+Coffee+Roasters+Tokyo"},{"label":"Official","url":"https://leavescoffee.jp/locations"}]},
-  {"name":"Coffee Wrights Kuramae","kind":"coffee","area":"asakusa","areaLabel":"Kuramae","category":"coffee","categoryLabel":"Coffee","lat":35.7040789,"lon":139.7897193,"summary":"A reliable neighborhood roaster when Leaves is closed or crowded. More casual and easy to drop into.","detail":"Useful nearby backup.","budget":"¥","access":"Roaster · walk-in","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Coffee+Wrights+Kuramae"}]},
-  {"name":"Woodberry Coffee Asakusa","kind":"coffee","area":"asakusa","areaLabel":"Asakusa","category":"coffee","categoryLabel":"Coffee","lat":35.7185858,"lon":139.7958849,"summary":"Established Tokyo specialty roaster with a broader menu, useful when you want brunch with the coffee.","detail":"Coffee and food.","budget":"¥¥","access":"Roaster · walk-in","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Woodberry+Coffee+Asakusa"}]},
-  {"name":"Coffee Murasaki","kind":"coffee","area":"ueno","areaLabel":"Ueno","category":"coffee","categoryLabel":"Coffee","lat":35.7167342,"lon":139.7805018,"summary":"Hand-drip and espresso-focused neighborhood specialty shop. Strongest convenient coffee choice near Ueno Station.","detail":"Small shop.","budget":"¥","access":"Walk-in","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Coffee+Murasaki+Ueno"}]},
-  {"name":"Kielo Coffee","kind":"coffee","area":"akihabara","areaLabel":"Akihabara","category":"coffee","categoryLabel":"Coffee","lat":35.701867899999996,"lon":139.7760028,"summary":"A specialty-focused refuge from Electric Town, known for modern, often expressive coffees.","detail":"Light-roast focus.","budget":"¥","access":"Walk-in","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Kielo+Coffee+Akihabara"}]},
+  {"name":"KOFFEE MAMEYA","kind":"coffee","area":"shibuya","areaLabel":"Omotesando / Jingumae","category":"coffee","categoryLabel":"Coffee","lat":35.6684763,"lon":139.7108953,"summary":"Standing bean-concierge bar with a deep multi-roaster menu tailored to each guest, distinct from Kakeru's seated courses.","detail":"No café award was verified. Official hours are not dependable; expect a queue and check official social media that day.","budget":"Check current prices","access":"Walk-in · queue-prone","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=KOFFEE+MAMEYA+4-15-3+Jingumae+Shibuya+Tokyo+150-0001"},{"label":"Official","url":"https://koffee-mameya.com/"},{"label":"Reddit","url":"https://www.reddit.com/r/espresso/comments/1j39kud/glitch_is_a_glitch/mfy7ghl/"}]},
+  {"name":"ONIBUS COFFEE Nakameguro","kind":"coffee","area":"ebisu","areaLabel":"Nakameguro","category":"coffee","categoryLabel":"Coffee","lat":35.6431844,"lon":139.6980169,"summary":"Compact station-front flagship with in-house roasting and expressive modern filter coffee and espresso.","detail":"Official hours are 09:00 to 18:00 with irregular closures. Use the 2-14-1 Kamimeguro branch, not the separate 3-chome shop.","budget":"Check current prices","access":"09:00 to 18:00 · irregular closures","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=ONIBUS+COFFEE+Nakameguro+2-14-1+Kamimeguro+Meguro+Tokyo+153-0051"},{"label":"Official","url":"https://onibuscoffee.com/pages/locations/nakameguro"},{"label":"Reddit","url":"https://www.reddit.com/r/Coffee/comments/d1cijk/coffee_shops_in_tokyo_and_kyoto/ezkdzcu/"},{"label":"Reddit","url":"https://www.reddit.com/r/JapanTravel/comments/cm3kdf/off_the_beaten_path_in_tokyo/evzut5o/"}]},
+  {"name":"FINE TIME COFFEE ROASTERS","kind":"coffee","area":"setagaya","areaLabel":"Kyodo / Setagaya","category":"coffee","categoryLabel":"Coffee","lat":35.650304,"lon":139.6374861,"summary":"Small light-roast specialist with careful Nordic-style sourcing and a serious rotating single-origin menu.","detail":"The owner, not the café, is a Coffee Meister and Q Grader who placed third in the 2016 Japan AeroPress Championship. Check Instagram before traveling; current hours are not reliably published.","budget":"Check current prices","access":"Small shop · check opening","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=FINETIME+COFFEE+ROASTERS+1-12-15+Kyodo+Setagaya+Tokyo+156-0052"},{"label":"Official","url":"http://finetimecoffee.com/"},{"label":"Reddit","url":"https://www.reddit.com/r/coffeejp/comments/1dn9qg2/finetime_setagaya/"},{"label":"Reddit","url":"https://www.reddit.com/r/pourover/comments/1e8ckra/japan_recommended_roasters/"}]},
+  {"name":"Switch Coffee Tokyo Meguro","kind":"coffee","area":"ebisu","areaLabel":"Meguro","category":"coffee","categoryLabel":"Coffee","lat":35.636344,"lon":139.7073923,"summary":"Minimalist roaster respected for clean, transparent pourovers at its current Meguro shop.","detail":"No café award was verified. Official hours are 08:00 to 15:00 daily with possible irregular holidays. This is the current 2-3-9 Meguro address, not the old 1-17-23 location.","budget":"Check current prices","access":"08:00 to 15:00 · possible irregular holidays","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=SWITCH+COFFEE+TOKYO+Meguro+2-3-9+Meguro+Meguro+Tokyo+153-0063"},{"label":"Official","url":"http://switchcoffeetokyo.com/"},{"label":"Reddit","url":"https://www.reddit.com/r/Coffee/comments/11huej5/tokyo_speciality_coffee_tastes_watered_down/"}]},
   {"name":"Single O Kanda-Awaji","kind":"coffee","area":"akihabara","areaLabel":"Kanda / Akihabara","category":"coffee","categoryLabel":"Coffee","lat":35.6974,"lon":139.76722619999998,"summary":"Australian-origin roaster with serious coffee, food, and coffee cocktails. Good flexible stop southwest of Akihabara without committing to west Tokyo.","detail":"Day to night.","budget":"¥¥","access":"Coffee, food, and cocktails","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Single+O+Kanda+Awaji"},{"label":"Official","url":"https://singleo.com.au/pages/single-o-japan"}]},
   {"name":"Glitch Coffee Ginza","kind":"coffee","area":"ginza","areaLabel":"Higashi-Ginza","category":"coffee","categoryLabel":"Coffee","lat":35.6689171,"lon":139.7686324,"summary":"High-end light-roast single origins, rare lots, and guided bean selection. Expect a line and premium cup prices.","detail":"Best role: one deliberate splurge cup, ideally early.","budget":"¥¥¥","access":"9am to 6pm · cashless","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Glitch+Coffee+Ginza"},{"label":"Official","url":"https://glitchcoffee.com/"}]},
-  {"name":"Single O Yurakucho","kind":"coffee","area":"ginza","areaLabel":"Yurakucho / Ginza","category":"coffee","categoryLabel":"Coffee","lat":35.674305,"lon":139.7624639,"summary":"A practical specialty alternative when Glitch's queue is not worth it.","detail":"Easy backup.","budget":"¥","access":"Walk-in","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Single+O+Yurakucho"}]},
-  {"name":"Bongen Coffee","kind":"coffee","area":"ginza","areaLabel":"Ginza","category":"coffee","categoryLabel":"Coffee","lat":35.6710713,"lon":139.77080379999998,"summary":"Highly polished, globally popular Ginza coffee stop. More atmosphere-driven than Leaves or Glitch, but worth knowing if nearby.","detail":"Japanese aesthetic.","budget":"¥¥","access":"Popular · expect a wait","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Bongen+Coffee+Ginza"}]},
+  {"name":"Raw Sugar Roast","kind":"coffee","area":"setagaya","areaLabel":"Kyodo / Setagaya","category":"coffee","categoryLabel":"Coffee","lat":35.6526653,"lon":139.6379729,"summary":"Contemporary flagship roastery focused on light-roast clarity, direct producer stories, and competition-caliber lots.","detail":"No café or founder award was verified. Cup of Excellence placement cited for a rotating Halo Hartumi lot belongs to producer Birhanu Dido. Check official Instagram before traveling; stable storefront hours are not published.","budget":"Check current prices","access":"Flagship roastery · check opening","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=RAW+SUGAR+ROAST+3-9-4+Miyasaka+Setagaya+Tokyo+156-0051"},{"label":"Official","url":"https://rawsugarroast.com/"}]},
+  {"name":"OGAWA COFFEE LABORATORY Shimokitazawa","kind":"coffee","area":"setagaya","areaLabel":"Shimokitazawa","category":"coffee","categoryLabel":"Coffee","lat":35.6632503,"lon":139.6697585,"summary":"Experiential bean salon with 13 single origins, six blends, tastings, and hands-on brewing tools.","detail":"No branch-level award was verified. Official hours are 09:00 to 20:00, last order 19:30; confirm staff availability for deeper tool experiences.","budget":"Check current prices","access":"09:00 to 20:00 · last order 19:30","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=OGAWA+COFFEE+LABORATORY+Shimokitazawa+reload+1-1+3-19-20+Kitazawa+Setagaya+Tokyo+155-0031"},{"label":"Official","url":"https://www.oc-ogawa.co.jp/ocl-shimokitazawa/"},{"label":"Reddit","url":"https://www.reddit.com/r/TokyoDrinks/comments/1df115c/ogawa_coffee_laboratory_shimokitazawa/"}]},
   {"name":"Koffee Mameya Kakeru","kind":"coffee","area":"east","areaLabel":"Kiyosumi-Shirakawa","category":"coffee","categoryLabel":"Coffee","lat":35.6764735,"lon":139.804184,"summary":"The most experience-driven option: a warehouse coffee bar with guided tasting and multi-course coffee menus. It is east, not west, but requires a purposeful detour.","detail":"Coffee tasting · reserve.","budget":"¥¥¥","access":"Purposeful detour","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Koffee+Mameya+Kakeru"},{"label":"Official","url":"https://koffee-mameya.com/"}]},
   {"name":"Single O Hamacho","kind":"coffee","area":"east","areaLabel":"Nihonbashi-Hamacho","category":"coffee","categoryLabel":"Coffee","lat":35.6840811,"lon":139.789312,"summary":"Flagship with rotating filter coffees from self-serve taps, plus food. Easy to combine with Nihonbashi or the route toward Ginza.","detail":"Coffee on tap.","budget":"¥¥","access":"Walk-in · food available","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Single+O+Hamacho"},{"label":"Official","url":"https://singleo.com.au/pages/hamacho-cafe"}]},
   {"name":"Men Mitsui","kind":"food","area":"asakusa","areaLabel":"Asakusa / Tawaramachi","category":"ramen","categoryLabel":"Ramen","lat":35.709534,"lon":139.790322,"score":3.84,"summary":"Hand-kneaded noodles and refined shoyu ramen. Highest-priority casual bowl near the base.","detail":"Go Fri or Sat if possible; its regular closure pattern includes Sun/Mon.","budget":"¥","access":"No reservations","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Men+Mitsui+Tokyo"},{"label":"Tabelog","url":"https://tabelog.com/en/tokyo/A1311/A131102/13284327/"}]},
-  {"name":"Daikokuya Tempura Honten","kind":"food","area":"asakusa","areaLabel":"Asakusa","category":"tempura","categoryLabel":"Tempura","lat":35.7127383,"lon":139.79557,"score":3.5,"summary":"Historic 1887 tempura shop, best known for dark, sauced tendon. Classic Asakusa rather than delicate counter tempura.","detail":"Classic tendon.","budget":"¥¥","access":"Walk-in","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Daikokuya+Tempura+Honten"},{"label":"Tabelog","url":"https://tabelog.com/en/tokyo/A1311/A131102/13003696/"}]},
+  {"name":"Den","kind":"food","area":"shibuya","areaLabel":"Jingumae / Gaiemmae","category":"kaiseki","categoryLabel":"Kaiseki","lat":35.6731846,"lon":139.7127294,"score":4.34,"summary":"Tabelog Award 2026 Silver and Michelin Guide 2026 two stars for warm, technically serious seasonal Japanese cooking.","detail":"JIA-Kan, 2-3-18 Jingumae, Shibuya-ku, Tokyo 150-0001. Exceptionally hard reservation; telephone bookings are listed from 12:00 to 17:00, but a concierge or cancellation is more realistic.","budget":"¥30,000-39,999","access":"Exceptionally hard reservation","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Den+2-3-18+Jingumae%2C+Shibuya-ku%2C+Tokyo+150-0001"},{"label":"Tabelog","url":"https://tabelog.com/en/tokyo/A1306/A130603/13046855/"},{"label":"Michelin","url":"https://guide.michelin.com/jp/en/tokyo-region/tokyo/restaurant/den"}]},
   {"name":"Asakusa Imahan Kokusai-dori","kind":"food","area":"asakusa","areaLabel":"Asakusa","category":"sukiyaki","categoryLabel":"Sukiyaki","lat":35.7139345,"lon":139.7922291,"score":3.63,"summary":"Classic sukiyaki and shabu-shabu. Lunch is the more flexible value play; reserve for a full dinner.","detail":"Plan ahead for dinner.","budget":"¥¥¥","access":"Reserve","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Asakusa+Imahan+Kokusai+dori"},{"label":"Tabelog","url":"https://tabelog.com/en/tokyo/A1311/A131102/13003649/"}]},
   {"name":"Asakusa Juroku","kind":"food","area":"asakusa","areaLabel":"Behind Sensoji","category":"soba","categoryLabel":"Soba","lat":35.7195464,"lon":139.7960473,"score":3.92,"summary":"High-end seasonal omakase finishing with serious soba. Very close to the hotel and ideal if a cancellation appears.","detail":"Seasonal omakase with soba finish.","budget":"¥¥¥¥","access":"Reserve","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Asakusa+Juroku"},{"label":"Tabelog","url":"https://tabelog.com/en/tokyo/A1311/A131102/13185027/"}]},
   {"name":"Aida Ya","kind":"food","area":"ueno","areaLabel":"Okachimachi","category":"tsukemen","categoryLabel":"Tsukemen","lat":35.7082346,"lon":139.77587119999998,"score":3.7,"summary":"Destination tsukemen with house noodles and a choice of two dipping broths. Excellent spontaneous meal.","detail":"Choice of two broths.","budget":"¥","access":"Walk-in","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Aida+Ya+Okachimachi"},{"label":"Tabelog","url":"https://tabelog.com/en/tokyo/A1311/A131101/13288181/"}]},
-  {"name":"Tonkatsu Yamabe Ueno","kind":"food","area":"ueno","areaLabel":"Ueno / Okachimachi","category":"katsu","categoryLabel":"Katsu","lat":35.7086737,"lon":139.7738358,"score":3.54,"summary":"Extremely good-value tonkatsu, counter-style and easy to understand. Expect a queue at meal times.","detail":"Counter-style value option.","budget":"¥","access":"No reservations","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Tonkatsu+Yamabe+Ueno"},{"label":"Tabelog","url":"https://tabelog.com/en/tokyo/A1311/A131101/13162760/"}]},
-  {"name":"Ueno Yabu Soba","kind":"food","area":"ueno","areaLabel":"Ameyoko","category":"soba","categoryLabel":"Soba","lat":35.710195399999996,"lon":139.7754618,"score":3.5,"summary":"Long-running Edo-style soba. A calm traditional alternative to the market crowds.","detail":"Traditional soba near Ameyoko.","budget":"¥¥","access":"Walk-in","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Ueno+Yabu+Soba"},{"label":"Tabelog","url":"https://tabelog.com/en/tokyo/A1311/A131101/13003594/"}]},
-  {"name":"Izuei Honten","kind":"food","area":"ueno","areaLabel":"Ueno","category":"unagi","categoryLabel":"Unagi","lat":35.709671,"lon":139.7726906,"score":3.5,"summary":"Historic Edo-style unagi near Shinobazu Pond. Useful when you want a proper sit-down meal without leaving Ueno.","detail":"Traditional sit-down meal.","budget":"¥¥¥","access":"Check current seating","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Izuei+Honten+Ueno"},{"label":"Tabelog search","url":"https://www.google.com/search?q=site%3Atabelog.com+Izuei+Honten+Ueno"}]},
+  {"name":"Kagurazaka Ishikawa","kind":"food","area":"shinjuku","areaLabel":"Kagurazaka","category":"kaiseki","categoryLabel":"Kaiseki","lat":35.7012115,"lon":139.739475,"score":4.41,"summary":"Tabelog Award 2026 Silver and a current Michelin listing for one of Tokyo's defining contemporary kaiseki meals.","detail":"Takamura Building 1F, 5-37 Kagurazaka, Shinjuku-ku, Tokyo 162-0825. Exceptionally hard reservation; established guests and concierge channels have a substantial advantage.","budget":"¥50,000-59,999","access":"Exceptionally hard reservation","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Kagurazaka+Ishikawa+5-37+Kagurazaka%2C+Shinjuku-ku%2C+Tokyo+162-0825"},{"label":"Tabelog","url":"https://tabelog.com/en/tokyo/A1309/A130905/13004079/"},{"label":"Michelin","url":"https://guide.michelin.com/jp/en/tokyo-region/tokyo/restaurant/kagurazaka-ishikawa"}]},
+  {"name":"Tori Shiki","kind":"food","area":"ebisu","areaLabel":"Meguro","category":"yakitori","categoryLabel":"Yakitori","lat":35.634287,"lon":139.7168978,"score":4.43,"summary":"Tabelog Award 2026 Silver benchmark for whole-chicken yakitori with exceptionally controlled heat and seasoning.","detail":"2-14-12 Kamiosaki, Shinagawa-ku, Tokyo 141-0021. Exceptionally hard reservation; telephone releases are usually two months ahead, so cancellation hunting is the realistic late route.","budget":"¥8,000-9,999","access":"Exceptionally hard reservation","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Tori+Shiki+2-14-12+Kamiosaki%2C+Shinagawa-ku%2C+Tokyo+141-0021"},{"label":"Tabelog","url":"https://tabelog.com/en/tokyo/A1316/A131601/13041029/"}]},
+  {"name":"Sushi Saitou","kind":"food","area":"roppongi","areaLabel":"Roppongi-Itchome","category":"sushi","categoryLabel":"Sushi","lat":35.6653854,"lon":139.7395973,"score":4.61,"summary":"Tabelog Award 2026 Gold apex sushi counter with exceptional rice, fish handling, and nigiri precision.","detail":"Ark Hills South Tower 1F, 1-4-5 Roppongi, Minato-ku, Tokyo 106-0032. Reservation-only and effectively inaccessible to most first-time independent diners; pursue a concierge, introduction, or cancellation. Strong perfume is prohibited.","budget":"¥50,000-59,999","access":"Exceptionally hard reservation","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Sushi+Saitou+Ark+Hills+South+Tower+1F%2C+1-4-5+Roppongi%2C+Minato-ku%2C+Tokyo+106-0032"},{"label":"Tabelog","url":"https://tabelog.com/en/tokyo/A1308/A130802/13015251/"}]},
   {"name":"Motenashi Kuroki","kind":"food","area":"akihabara","areaLabel":"Asakusabashi / Akihabara","category":"ramen","categoryLabel":"Ramen","lat":35.6979964,"lon":139.7854476,"score":3.91,"summary":"One of the area's true destination ramen shops, known for precise Japanese technique. Queue-worthy.","detail":"Destination bowl.","budget":"¥","access":"No reservations","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Motenashi+Kuroki+Tokyo"},{"label":"Tabelog","url":"https://tabelog.com/en/tokyo/A1311/A131103/13290780/"}]},
   {"name":"Tonkatsu Marugo","kind":"food","area":"akihabara","areaLabel":"Akihabara","category":"katsu","categoryLabel":"Katsu","lat":35.6991387,"lon":139.7697273,"score":3.74,"summary":"Akihabara's classic destination tonkatsu. Go Fri through Sun on this trip and queue before opening.","detail":"Trip timing: closed Mon/Tue.","budget":"¥¥","access":"Queue before opening","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Tonkatsu+Marugo+Akihabara"},{"label":"Tabelog","url":"https://tabelog.com/en/tokyo/A1310/A131001/13000379/"}]},
   {"name":"Kanda Matsuya Honten","kind":"food","area":"akihabara","areaLabel":"Kanda / Awajicho","category":"soba","categoryLabel":"Soba","lat":35.6961148,"lon":139.76878829999998,"score":3.65,"summary":"Lively Edo soba institution founded in 1884. Pair with sake and small plates if you have time.","detail":"Old Tokyo atmosphere.","budget":"¥¥","access":"Walk-in","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Kanda+Matsuya+Honten"},{"label":"Tabelog","url":"https://tabelog.com/en/tokyo/A1310/A131002/13000340/"}]},
@@ -216,10 +223,10 @@ h1 { margin: 0; color: #ffffff; font-family: "Avenir Next Condensed", "Arial Nar
   {"name":"Ginza Kagari Honten","kind":"food","area":"ginza","areaLabel":"Ginza","category":"ramen","categoryLabel":"Ramen","lat":35.6712019,"lon":139.76133149999998,"score":3.66,"summary":"Polished chicken-paitan ramen, open across the afternoon more reliably than many famous shops. Best flexible Ginza meal.","detail":"Flexible afternoon option.","budget":"¥","access":"Walk-in","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Ginza+Kagari+Honten"},{"label":"Tabelog","url":"https://tabelog.com/en/tokyo/A1301/A130101/13230021/"}]},
   {"name":"Tonkatsu Aoki Ginza 8-chome","kind":"food","area":"ginza","areaLabel":"Ginza / Shimbashi","category":"katsu","categoryLabel":"Katsu","lat":35.6682225,"lon":139.7614816,"score":3.71,"summary":"Juicy premium-pork tonkatsu and a strong walk-in option at Ginza's southern edge.","detail":"Premium pork.","budget":"¥¥","access":"No reservations","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Tonkatsu+Aoki+Ginza+8+chome"},{"label":"Tabelog","url":"https://tabelog.com/en/tokyo/A1301/A130101/13219635/"}]},
   {"name":"Tempura Kondo","kind":"food","area":"ginza","areaLabel":"Ginza","category":"tempura","categoryLabel":"Tempura","lat":35.6711696,"lon":139.7631786,"score":3.95,"summary":"Tabelog Award 2026 Bronze counter tempura. Treat this as a cancellation hunt, not a spontaneous walk-in.","detail":"High-end counter tempura.","budget":"¥¥¥¥","access":"Reserve","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Tempura+Kondo+Ginza"},{"label":"Tabelog","url":"https://tabelog.com/en/tokyo/A1301/A130101/13004993/"}]},
-  {"name":"Torie Ueno","kind":"food","area":"ueno","areaLabel":"Ueno / Okachimachi","category":"yakitori","categoryLabel":"Yakitori","lat":35.7057347,"lon":139.77316109999998,"summary":"A yakitori option near the Ueno and Okachimachi area. Check the current menu, hours, and seating before making a special trip.","detail":"Added local option; current details should be checked.","budget":"Check current pricing","access":"Check hours and seating","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Torie+Ueno+Tokyo"},{"label":"Tabelog search","url":"https://www.google.com/search?q=site%3Atabelog.com+Torie+Ueno+Tokyo"}]},
-  {"name":"Bentenyama Miyako Sushi","kind":"food","area":"asakusa","areaLabel":"Asakusa","category":"sushi","categoryLabel":"Sushi","lat":35.712995299999996,"lon":139.7977635,"summary":"A traditional sushi option in Asakusa. Check the current service format, price, and reservation policy before visiting.","detail":"Added local option; current details should be checked.","budget":"Check current pricing","access":"Check reservation policy","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Bentenyama+Miyako+Sushi+Asakusa+Tokyo"},{"label":"Tabelog search","url":"https://www.google.com/search?q=site%3Atabelog.com+Bentenyama+Miyako+Sushi+Asakusa"}]},
-  {"name":"Motsuyaki Daitoryo Ueno","kind":"food","area":"ueno","areaLabel":"Ueno / Ameyoko","category":"izakaya","categoryLabel":"Izakaya","lat":35.7087296,"lon":139.7741538,"summary":"A casual Ameyoko-area izakaya known for motsuyaki. Check current hours and ordering details before visiting.","detail":"Motsuyaki focus; current details should be checked.","budget":"Check current pricing","access":"Casual seating · check hours","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Motsuyaki+Daitoryo+Ueno+Tokyo"},{"label":"Tabelog search","url":"https://www.google.com/search?q=site%3Atabelog.com+Motsuyaki+Daitoryo+Ueno"}]},
-  {"name":"Toritsune Shizendo","kind":"food","area":"ueno","areaLabel":"Yushima / Ueno","category":"yakitori","categoryLabel":"Yakitori","lat":35.7039784,"lon":139.77269859999998,"summary":"A chicken-focused option associated with yakitori and oyakodon. Check the current menu, hours, and access rules before visiting.","detail":"Yakitori and oyakodon; current details should be checked.","budget":"Check current pricing","access":"Check hours and access","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Toritsune+Shizendo+Tokyo"},{"label":"Tabelog search","url":"https://www.google.com/search?q=site%3Atabelog.com+Toritsune+Shizendo+Tokyo"}]},
+  {"name":"Tonkatsu Narikura","kind":"food","area":"west","areaLabel":"Minami-Asagaya","category":"katsu","categoryLabel":"Katsu","lat":35.6977138,"lon":139.6387536,"score":4.28,"summary":"Tabelog Award 2026 Bronze destination tonkatsu with pale, delicate crust and exceptionally juicy premium pork.","detail":"4-33-9 Naritahigashi, Suginami-ku, Tokyo 166-0015. Reservation-only with no walk-in fallback; closed Monday, Tuesday, and Friday on the current schedule.","budget":"¥6,000-7,999","access":"Reservation-only · hard","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Tonkatsu+Narikura+4-33-9+Naritahigashi%2C+Suginami-ku%2C+Tokyo+166-0015"},{"label":"Tabelog","url":"https://tabelog.com/en/tokyo/A1319/A131905/13236380/"}]},
+  {"name":"Azabu Kadowaki","kind":"food","area":"roppongi","areaLabel":"Azabu-Juban","category":"kaiseki","categoryLabel":"Kaiseki","lat":35.6559477,"lon":139.7336202,"score":4.02,"summary":"Michelin Guide 2026 three-star seasonal cuisine with polished, creative, luxurious flavor combinations.","detail":"Rose House 1F, 2-7-2 Azabujuban, Minato-ku, Tokyo 106-0045. Reservations are essential; dinner only, closed Sunday and public holidays. Listed budget is ¥30,000-39,999, while recent review spending trends higher.","budget":"¥30,000-39,999","access":"Reservations essential · dinner only","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Azabu+Kadowaki+Rose+House+1F%2C+2-7-2+Azabujuban%2C+Minato-ku%2C+Tokyo+106-0045"},{"label":"Tabelog","url":"https://tabelog.com/en/tokyo/A1307/A130702/13001664/"},{"label":"Michelin","url":"https://guide.michelin.com/jp/en/tokyo-region/tokyo/restaurant/azabu-kadowaki"}]},
+  {"name":"European Curry Tomato","kind":"food","area":"west","areaLabel":"Ogikubo","category":"curry","categoryLabel":"Curry","lat":35.7024775,"lon":139.6197423,"score":4.26,"summary":"Tabelog Award 2026 Bronze European-style curry built from 36 spices and a very long reduction.","detail":"Yoshida Building 1F, 5-20-7 Ogikubo, Suginami-ku, Tokyo 167-0051. Walk-in only; expect serious queues, service ends when curry sells out, and the current schedule closes Wednesday and Thursday.","budget":"¥2,000-2,999","access":"Walk-in only · sells out","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=European+Curry+Tomato+Yoshida+Building+1F%2C+5-20-7+Ogikubo%2C+Suginami-ku%2C+Tokyo+167-0051"},{"label":"Tabelog","url":"https://tabelog.com/en/tokyo/A1319/A131906/13001113/"}]},
+  {"name":"Japanese Soba Noodles Tsuta","kind":"food","area":"shibuya","areaLabel":"Yoyogi-Uehara","category":"ramen","categoryLabel":"Ramen","lat":35.6704056,"lon":139.6824837,"score":3.78,"summary":"Globally influential, highly composed ramen from the first ramen restaurant to earn a Michelin star.","detail":"Frontier Yoyogi-Uehara B1F, 3-2-4 Nishihara, Shibuya-ku, Tokyo 151-0066. Reservations are available; closed Tuesday. Check official social media for temporary service changes.","budget":"¥2,000-2,999","access":"Reservations available · closed Tuesday","links":[{"label":"Google Maps","url":"https://www.google.com/maps/search/?api=1&query=Japanese+Soba+Noodles+Tsuta+Frontier+Yoyogi-Uehara+B1F%2C+3-2-4+Nishihara%2C+Shibuya-ku%2C+Tokyo+151-0066"},{"label":"Tabelog","url":"https://tabelog.com/en/tokyo/A1318/A131811/13241560/"}]},
   {
     "name": "LONICH",
     "kind": "coffee",
@@ -397,58 +404,62 @@ h1 { margin: 0; color: #ffffff; font-family: "Avenir Next Condensed", "Arial Nar
     ]
   },
   {
-    "name": "Lucent Coffee",
+    "name": "BEAR POND ESPRESSO",
     "kind": "coffee",
-    "area": "asakusa",
-    "areaLabel": "Kuramae/Kotobuki",
+    "area": "setagaya",
+    "areaLabel": "Shimokitazawa",
     "category": "coffee",
     "categoryLabel": "Coffee",
-    "lat": 35.7076528,
-    "lon": 139.7907993,
-    "summary": "Quiet early-opening Kuramae roaster for clean, modern coffee.",
-    "detail": "Strong morning alternative to the better-known Kuramae names; respect the shop’s strict photo policy. Hours have changed over time; recent secondary reporting suggests weekday mornings and longer weekend service. Check Instagram. Photography is tightly restricted to a few shots at your own seat.",
-    "budget": "¥",
-    "access": "Reddit pick",
+    "lat": 35.6639646,
+    "lon": 139.6678903,
+    "summary": "Idiosyncratic espresso institution built around founder Katsuyuki Tanaka's Angel Stain and Flower Child blend.",
+    "detail": "No café award was verified. Tanaka, not the café, is a Counter Culture Coffee certified barista and Chemex Global Ambassador. Go early and verify opening and signature-drink availability that day.",
+    "budget": "Check current prices",
+    "access": "Limited service · verify opening",
     "links": [
       {
         "label": "Google Maps",
-        "url": "https://www.google.com/maps/search/?api=1&query=Lucent+Coffee+1-17-12+Kotobuki+Tokyo"
+        "url": "https://www.google.com/maps/search/?api=1&query=BEAR+POND+ESPRESSO+2-36-12+Kitazawa+Setagaya+Tokyo+155-0031"
       },
       {
         "label": "Official",
-        "url": "https://www.instagram.com/lucentcoffee/"
+        "url": "https://www.bearpondespresso.com/"
       },
       {
         "label": "Reddit",
-        "url": "https://www.reddit.com/r/JapanTravelTips/comments/1alqqs4/what_is_kuramae_like/"
+        "url": "https://www.reddit.com/r/TokyoTravel/comments/1jpk0lp/bear_pond_espresso/"
+      },
+      {
+        "label": "Reddit",
+        "url": "https://www.reddit.com/r/Coffee/comments/11huej5/tokyo_speciality_coffee_tastes_watered_down/"
       }
     ]
   },
   {
-    "name": "SOL’S Coffee Roastery",
+    "name": "PADDLERS COFFEE",
     "kind": "coffee",
-    "area": "akihabara",
-    "areaLabel": "Asakusabashi/Kuramae",
+    "area": "shibuya",
+    "areaLabel": "Yoyogi-Uehara",
     "category": "coffee",
     "categoryLabel": "Coffee",
-    "lat": 35.7013958,
-    "lon": 139.7883723,
-    "summary": "Friendly Kuramae-area micro-roaster with useful early hours.",
-    "detail": "Easy walking-route addition between Asakusa, Kuramae and Asakusabashi. Official schedule: Mon/Fri 08:00–17:00; Tue–Thu 08:00–15:00; weekends/holidays 08:00–18:00.",
-    "budget": "¥",
-    "access": "Reddit pick",
+    "lat": 35.6746329,
+    "lon": 139.6787015,
+    "summary": "Mature neighborhood café with a leafy courtyard and a focused, long-running relationship with Stumptown.",
+    "detail": "No café award was verified. Official hours are 07:30 to 16:00, closed Wednesdays; ignore older third-party listings showing an 18:00 close.",
+    "budget": "Check current prices",
+    "access": "07:30 to 16:00 · closed Wednesday",
     "links": [
       {
         "label": "Google Maps",
-        "url": "https://www.google.com/maps/search/?api=1&query=SOLS+Coffee+Roastery+3-25-7+Asakusabashi+Tokyo"
+        "url": "https://www.google.com/maps/search/?api=1&query=PADDLERS+COFFEE+2-26-5+Nishihara+Shibuya+Tokyo+151-0066"
       },
       {
         "label": "Official",
-        "url": "https://solscoffee.com/pages/locations"
+        "url": "https://paddlerscoffee.com/locations/paddlers-coffee/"
       },
       {
         "label": "Reddit",
-        "url": "https://www.reddit.com/r/JapanTravelTips/comments/1alqqs4/what_is_kuramae_like/"
+        "url": "https://www.reddit.com/r/JapanTravel/comments/1junj2i/3_week_japan_itinerary_tips_and_recommendations/"
       }
     ]
   },
@@ -681,30 +692,30 @@ h1 { margin: 0; color: #ffffff; font-family: "Avenir Next Condensed", "Arial Nar
     ]
   },
   {
-    "name": "Coffee by Jalana",
+    "name": "THE ROASTERY BY NOZY COFFEE",
     "kind": "coffee",
-    "area": "ueno",
-    "areaLabel": "Ueno/Ameyoko",
+    "area": "shibuya",
+    "areaLabel": "Harajuku / Jingumae",
     "category": "coffee",
     "categoryLabel": "Coffee",
-    "lat": 35.7089461,
-    "lon": 139.7751394,
-    "summary": "Independent Ameyoko coffee bar with rare late-night weekend hours.",
-    "detail": "Best practical specialty stop around Ueno; lively rather than contemplative. Official 2026 post says open daily, Fri/Sat 11:00–24:00, other days 11:00–20:00. More lifestyle café than destination roastery; include mainly for Ueno coverage and convenience.",
-    "budget": "¥",
-    "access": "Reddit pick",
+    "lat": 35.6654945,
+    "lon": 139.7048132,
+    "summary": "Spacious Cat Street roastery serving only single-origin coffee across espresso, latte, and French press.",
+    "detail": "No café award was verified. Current map listings show 10:00 to 20:00, but static official hours are unavailable; confirm that day, especially around events or private closures.",
+    "budget": "Check current prices",
+    "access": "Current listing 10:00 to 20:00 · confirm",
     "links": [
       {
         "label": "Google Maps",
-        "url": "https://www.google.com/maps/search/?api=1&query=Coffee+by+Jalana+6-10-1+Ueno+Tokyo"
+        "url": "https://www.google.com/maps/search/?api=1&query=THE+ROASTERY+BY+NOZY+COFFEE+5-17-13+Jingumae+Shibuya+Tokyo+150-0001"
       },
       {
         "label": "Official",
-        "url": "https://www.instagram.com/coffee_by_jalana/"
+        "url": "https://www.tysons.jp/roastery/"
       },
       {
         "label": "Reddit",
-        "url": "https://www.reddit.com/r/JapanTravel/comments/162ae85/a_short_guide_to_specialty_coffee_in_tokyo/"
+        "url": "https://www.reddit.com/r/pourover/comments/1kd1aeb/japanthailand_haul/"
       }
     ]
   },
@@ -1384,102 +1395,106 @@ h1 { margin: 0; color: #ffffff; font-family: "Avenir Next Condensed", "Arial Nar
     ]
   },
   {
-    "name": "Niku no Oyama",
+    "name": "Ishiusuhiki Teuchi Kyorakutei",
     "kind": "food",
-    "area": "ueno",
-    "areaLabel": "Ueno/Ameyoko",
-    "category": "izakaya",
-    "categoryLabel": "Izakaya",
-    "lat": 35.7103925,
-    "lon": 139.7752423,
-    "score": 3.49,
-    "summary": "Seating can be reserved except on discount “meat days”; walk-up croquettes and menchi-katsu are easiest.",
-    "detail": "Seating can be reserved except on discount “meat days”; walk-up croquettes and menchi-katsu are easiest.",
-    "budget": "¥",
-    "access": "Seating can be reserved except on discount “meat days”",
-    "links": [
-      {
-        "label": "Google Maps",
-        "url": "https://www.google.com/maps/search/?api=1&query=%E8%82%89%E3%81%AE%E5%A4%A7%E5%B1%B1%20%E4%B8%8A%E9%87%8E"
-      },
-      {
-        "label": "Tabelog",
-        "url": "https://tabelog.com/tokyo/A1311/A131101/13016728/"
-      }
-    ]
-  },
-  {
-    "name": "Nihombashi Yabukyu",
-    "kind": "food",
-    "area": "east",
-    "areaLabel": "Nihombashi",
+    "area": "shinjuku",
+    "areaLabel": "Kagurazaka",
     "category": "soba",
     "categoryLabel": "Soba",
-    "lat": 35.6824751,
-    "lon": 139.7721858,
-    "score": 3.49,
-    "summary": "Particularly useful for curry nanban and a traditional office-district soba experience.",
-    "detail": "Reservations available; Sun/holidays closed.",
-    "budget": "¥¥",
-    "access": "Reservations available",
+    "lat": 35.7007854,
+    "lon": 139.7395161,
+    "score": 3.75,
+    "summary": "Michelin Guide 2026 Bib Gourmand for serious stone-milled, hand-cut soba with strong tempura and sake.",
+    "detail": "Kagurazaka-kan 1F, 3-6 Kagurazaka, Shinjuku-ku, Tokyo 162-0825. Lunch is the practical walk-in; only three dinner groups per day can reserve. Closed Sunday, Monday, and public holidays. Cash only.",
+    "budget": "Lunch ¥1,000-1,999 · dinner ¥4,000-4,999",
+    "access": "Lunch walk-in · limited dinner reservations",
     "links": [
       {
         "label": "Google Maps",
-        "url": "https://www.google.com/maps/search/?api=1&query=%E6%97%A5%E6%9C%AC%E6%A9%8B%20%E3%82%84%E3%81%B6%E4%B9%85"
+        "url": "https://www.google.com/maps/search/?api=1&query=Ishiusuhiki+Teuchi+Kyorakutei+Kagurazaka-kan+1F%2C+3-6+Kagurazaka%2C+Shinjuku-ku%2C+Tokyo+162-0825"
       },
       {
         "label": "Tabelog",
-        "url": "https://tabelog.com/tokyo/A1302/A130202/13011459/"
+        "url": "https://tabelog.com/en/tokyo/A1309/A130905/13000479/"
+      },
+      {
+        "label": "Michelin",
+        "url": "https://guide.michelin.com/jp/en/tokyo-region/tokyo/restaurant/kyorakutei"
       }
     ]
   },
   {
-    "name": "Taimeiken",
+    "name": "SOBA HOUSE Konjiki Hototogisu Shinjuku Gyoen Honten",
     "kind": "food",
-    "area": "east",
-    "areaLabel": "Mitsukoshimae/Nihombashi",
-    "category": "yoshoku",
-    "categoryLabel": "Yoshoku",
-    "lat": 35.684508199999996,
-    "lon": 139.7756915,
-    "score": 3.49,
-    "summary": "Classic omurice, hamburger steak, and ramen.",
-    "detail": "This is the current post-move location; 1F closes Monday and 2F closes Sunday/Monday.",
-    "budget": "¥",
-    "access": "This is the current post-move location",
+    "area": "shinjuku",
+    "areaLabel": "Shinjuku-Gyoenmae",
+    "category": "ramen",
+    "categoryLabel": "Ramen",
+    "lat": 35.6887934,
+    "lon": 139.7083014,
+    "score": 3.77,
+    "summary": "Distinctive clam-driven ramen with layered oils and a Michelin-starred reputation.",
+    "detail": "Dai-22 Kyutei Mansion 1F, 2-4-1 Shinjuku, Shinjuku-ku, Tokyo 160-0022. No reservations. Collect a numbered ticket from 09:30 for lunch or 17:30 for dinner, register by smartphone, and return within 20 minutes of the call. Closed Sunday and Monday; sells out.",
+    "budget": "Typically ¥1,000-1,999",
+    "access": "Numbered ticket · no reservations",
     "links": [
       {
         "label": "Google Maps",
-        "url": "https://www.google.com/maps/search/?api=1&query=%E3%81%9F%E3%81%84%E3%82%81%E3%81%84%E3%81%91%E3%82%93%20%E6%97%A5%E6%9C%AC%E6%A9%8B"
+        "url": "https://www.google.com/maps/search/?api=1&query=SOBA+HOUSE+Konjiki+Hototogisu+Shinjuku+Gyoen+Honten+Dai-22+Kyutei+Mansion+1F%2C+2-4-1+Shinjuku%2C+Shinjuku-ku%2C+Tokyo+160-0022"
       },
       {
         "label": "Tabelog",
-        "url": "https://tabelog.com/tokyo/A1302/A130202/13252161/"
+        "url": "https://tabelog.com/en/tokyo/A1304/A130402/13222172/"
       }
     ]
   },
   {
-    "name": "Tempura Nakayama",
+    "name": "Udon Shin",
     "kind": "food",
-    "area": "east",
-    "areaLabel": "Ningyocho",
-    "category": "tempura",
-    "categoryLabel": "Tempura",
-    "lat": 35.6840743,
-    "lon": 139.7826777,
-    "score": 3.49,
-    "summary": "Famous for dark-sauced “black tendon.”",
-    "detail": "Reservations accepted, but service is limited to weekday lunch and dinner; weekends/holidays closed.",
-    "budget": "¥",
-    "access": "Reservations accepted, but service is limited to weekday lunch and dinner",
+    "area": "shinjuku",
+    "areaLabel": "Yoyogi / South Shinjuku",
+    "category": "udon",
+    "categoryLabel": "Udon",
+    "lat": 35.6864974,
+    "lon": 139.697009,
+    "score": 3.68,
+    "summary": "Freshly cut-to-order noodles with superb elasticity and unusually broad service hours.",
+    "detail": "Soma Building 1F, 2-20-16 Yoyogi, Shibuya-ku, Tokyo 151-0053. Walk-in tickets run from 09:00 to roughly 20:30; queues are common. A paid Fast Pass can be booked up to 30 days ahead. Current listing says daily 11:00 to 22:00.",
+    "budget": "¥1,000-1,999",
+    "access": "Walk-in tickets · paid Fast Pass available",
     "links": [
       {
         "label": "Google Maps",
-        "url": "https://www.google.com/maps/search/?api=1&query=%E5%A4%A9%E3%81%B7%E3%82%89%20%E4%B8%AD%E5%B1%B1%20%E4%BA%BA%E5%BD%A2%E7%94%BA"
+        "url": "https://www.google.com/maps/search/?api=1&query=Udon+Shin+Soma+Building+1F%2C+2-20-16+Yoyogi%2C+Shibuya-ku%2C+Tokyo+151-0053"
       },
       {
         "label": "Tabelog",
-        "url": "https://tabelog.com/tokyo/A1302/A130204/13018093/"
+        "url": "https://tabelog.com/en/tokyo/A1304/A130401/13125862/"
+      }
+    ]
+  },
+  {
+    "name": "Chuka Soba Kotetsu",
+    "kind": "food",
+    "area": "setagaya",
+    "areaLabel": "Shimokitazawa",
+    "category": "ramen",
+    "categoryLabel": "Ramen",
+    "lat": 35.6646291,
+    "lon": 139.6663431,
+    "score": 3.73,
+    "summary": "Clean, balanced neighborhood chuka-soba at practical prices; a former Michelin Bib Gourmand selection.",
+    "detail": "2-39-13 Kitazawa, Setagaya-ku, Tokyo 155-0031. No reservations; eight counter seats, cash only. Closed Tuesday, with lunch only on Monday. Usually easier than Tokyo's headline ramen queues.",
+    "budget": "Typically ¥1,000-1,999",
+    "access": "No reservations · cash only",
+    "links": [
+      {
+        "label": "Google Maps",
+        "url": "https://www.google.com/maps/search/?api=1&query=Chuka+Soba+Kotetsu+2-39-13+Kitazawa%2C+Setagaya-ku%2C+Tokyo+155-0031"
+      },
+      {
+        "label": "Tabelog",
+        "url": "https://tabelog.com/en/tokyo/A1318/A131802/13198320/"
       }
     ]
   },
@@ -1538,9 +1553,9 @@ const styles = {
   rice: { color: "#4d7c0f", symbol: "🍚", label: "Rice dishes" },
   oden: { color: "#c2410c", symbol: "🥘", label: "Oden" }
 };
-const eastTokyoBounds = L.latLngBounds([35.663, 139.755], [35.723, 139.81]);
+const citywideBounds = L.latLngBounds([35.62, 139.60], [35.73, 139.82]);
 const map = L.map("map", { zoomControl: true, minZoom: 11, maxZoom: 19 });
-map.fitBounds(eastTokyoBounds, { padding: [18, 18] });
+map.fitBounds(citywideBounds, { padding: [18, 18] });
 L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
   maxNativeZoom: 16,
   maxZoom: 19,
@@ -1559,7 +1574,14 @@ const districtLabels = [
   { name: "Ginza", lat: 35.6705, lon: 139.765 },
   { name: "Kuramae", lat: 35.7045, lon: 139.792 },
   { name: "Kiyosumi-Shirakawa", lat: 35.681, lon: 139.804 },
-  { name: "Nihombashi/Hamacho", lat: 35.6845, lon: 139.789 }
+  { name: "Nihombashi/Hamacho", lat: 35.6845, lon: 139.789 },
+  { name: "Shibuya/Harajuku", lat: 35.6655, lon: 139.7005 },
+  { name: "Nakameguro", lat: 35.644, lon: 139.699 },
+  { name: "Shinjuku", lat: 35.69, lon: 139.7 },
+  { name: "Kagurazaka", lat: 35.701, lon: 139.739 },
+  { name: "Roppongi/Azabu", lat: 35.659, lon: 139.736 },
+  { name: "Shimokitazawa", lat: 35.663, lon: 139.668 },
+  { name: "Ogikubo", lat: 35.702, lon: 139.62 },
 ];
 districtLabels.forEach((district) => {
   L.marker([district.lat, district.lon], {
@@ -1793,7 +1815,7 @@ categoryButtons.forEach((button) => {
 });
 
 document.getElementById("reset-map").addEventListener("click", () => {
-  map.fitBounds(eastTokyoBounds, { padding: [18, 18] });
+  map.fitBounds(citywideBounds, { padding: [18, 18] });
 });
 
 function updateLocation(position, recenter) {
@@ -1826,10 +1848,10 @@ function updateLocation(position, recenter) {
 }
 
 function locationErrorMessage(error) {
-  if (error.code === 1) return ["Location denied", "Allow location in browser settings, then tap Locate me again."];
+  if (error.code === 1) return ["Location denied", "Allow location in browser settings, then tap the map’s location button again."];
   if (error.code === 2) return ["Location unavailable", "Your device could not determine a position. Try again outside or with location services on."];
-  if (error.code === 3) return ["Location timed out", "Tap Locate me to try again."];
-  return ["Location unavailable", "Tap Locate me to try again."];
+  if (error.code === 3) return ["Location timed out", "Tap the map’s location button to try again."];
+  return ["Location unavailable", "Tap the map’s location button to try again."];
 }
 
 function clearLocationWatch() {
