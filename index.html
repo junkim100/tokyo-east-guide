@@ -122,8 +122,8 @@ body.is-map-fullscreen { overflow: hidden; }
 <div class="map-shell">
 <div id="map" role="region" aria-label="Map of Tokyo venues"></div>
 <div class="map-controls" aria-label="Map controls">
-<button class="map-control-button" id="reset-map" type="button" aria-label="Show citywide Tokyo overview" title="Show citywide Tokyo overview"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 4H4v5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
-<button class="map-control-button" id="toggle-fullscreen-map" type="button" aria-pressed="false" aria-label="View map full screen" title="View map full screen"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg></button>
+<button class="map-control-button" id="reset-map" type="button" aria-label="Show citywide Tokyo overview" title="Show citywide Tokyo overview"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 3l8 3 5-2v17l-5 2-8-3-5 2V5z"/><path d="M8 3v17M16 6v17"/></svg></button>
+<button class="map-control-button" id="toggle-fullscreen-map" type="button" aria-pressed="false" aria-label="View map full screen" title="View map full screen"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button>
 <button class="map-control-button" id="locate" type="button" aria-label="Find my current location" title="Find my current location"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></button>
 </div>
 </div>
@@ -1833,8 +1833,8 @@ document.getElementById("reset-map").addEventListener("click", () => {
 
 const mapShell = document.querySelector(".map-shell");
 const fullscreenButton = document.getElementById("toggle-fullscreen-map");
-const fullscreenEnterIcon = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>';
-const fullscreenExitIcon = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 9V4H4M15 9V4h5M15 15v5h5M9 15v5H4"/></svg>';
+const fullscreenEnterIcon = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>';
+const fullscreenExitIcon = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/></svg>';
 
 function isMapFullscreen() {
   return document.body.classList.contains("is-map-fullscreen");
